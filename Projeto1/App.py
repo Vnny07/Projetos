@@ -1,5 +1,6 @@
 from Usuarios import Usuarios
 from tkinter import *
+from tkinter import ttk
 
 class Application:
     def __init__(self, master=None):
@@ -41,7 +42,7 @@ class Application:
 
         self.container8 = Frame(master)
         self.container8["padx"] = 20
-        self.container8["pady"] = 10
+        self.container8["pady"] = 5
         self.container8.pack()
 
         self.container9 = Frame(master)
@@ -131,17 +132,16 @@ class Application:
         self.lblmsg["font"] = ("Verdana", "9", "italic")
         self.lblmsg.pack()
 
-        self.lblHeaderID = Label(self.container11, text="Código", font=self.fonte, width=10, borderwidth=1, relief="solid")
-        self.lblHeaderID.pack(side=LEFT)
-        self.lblHeaderNome = Label(self.container11, text="Nome", font=self.fonte, width=25, borderwidth=1,
-                                   relief="solid")
-        self.lblHeaderNome.pack(side=LEFT)
-        self.lblHeaderUF = Label(self.container11, text="UF", font=self.fonte, width=10, borderwidth=1,
-                                 relief="solid")
-        self.lblHeaderUF.pack(side=LEFT)
+        self.tree = ttk.Treeview(self.container11, columns=("id", "nome", "estado"), show='headings')
+        self.tree.heading("id", text="Código")
+        self.tree.heading("nome", text="Nome")
+        self.tree.heading("estado", text="UF")
 
-        self.lstUsers = Listbox(self.container10, width=50)
-        self.lstUsers.pack()
+        self.tree.column("id", width = 100)
+        self.tree.column("nome", width = 100)
+        self.tree.column("estado", width = 100)
+
+        self.tree.pack()
 
         self.listarUsuarios()
 
@@ -185,13 +185,13 @@ class Application:
         self.lblmsg["text"] = "Usuário encontrado"
 
     def listarUsuarios(self):
-        self.lstUsers.delete(0, END)
+        self.tree.delete(*self.tree.get_children())
         user = Usuarios()
         usuarios = user.listUsers()
         for u in usuarios:
-            linha = f'{u[0]:<10} {u[1]:^65} {u[2]:>10}'
-            self.lstUsers.insert(END, linha)
+            self.tree.insert("", END, values=(u[0], u[1], u[2]))
 
 root = Tk()
+root.title("Cadastro de Usuário")
 app = Application(master=root)
 root.mainloop()
