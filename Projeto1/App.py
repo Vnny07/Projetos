@@ -58,7 +58,7 @@ class Application:
         self.titulo = Label(self.container1, text="Informe os dados:", font=("Calibri", "9", "bold"))
         self.titulo.pack()
 
-        self.lblidusuario = Label(self.container2, text="ID Usuário:", font=self.fonte, width=10)
+        self.lblidusuario = Label(self.container2, text="Código:", font=self.fonte, width=10)
         self.lblidusuario.pack(side=LEFT)
         self.txtidusuario = Entry(self.container2, width=10, font=self.fonte)
         self.txtidusuario.pack(side=LEFT)
@@ -133,7 +133,7 @@ class Application:
         self.titulo = Label(self.container1, text="Informe os dados:", font=("Calibri", "9", "bold"))
         self.titulo.pack()
 
-        self.lblidcidade = Label(self.container2, text="ID Cidade:", font=self.fonte, width=10)
+        self.lblidcidade = Label(self.container2, text="Código:", font=self.fonte, width=10)
         self.lblidcidade.pack(side=LEFT)
         self.txtidcidade = Entry(self.container2, width=10, font=self.fonte)
         self.txtidcidade.pack(side=LEFT)
@@ -198,7 +198,7 @@ class Application:
         self.titulo = Label(self.container1, text="Informe os dados:", font=("Calibri", "9", "bold"))
         self.titulo.pack()
 
-        self.lblidcliente = Label(self.container2, text="ID Cliente:", font=self.fonte, width=10)
+        self.lblidcliente = Label(self.container2, text="Código:", font=self.fonte, width=10)
         self.lblidcliente.pack(side=LEFT)
         self.txtidcliente = Entry(self.container2, width=10, font=self.fonte)
         self.txtidcliente.pack(side=LEFT)
