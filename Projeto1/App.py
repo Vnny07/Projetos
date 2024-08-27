@@ -145,7 +145,7 @@ class Application:
         self.txtnomecidade = Entry(self.container3, width=25, font=self.fonte)
         self.txtnomecidade.pack(side=LEFT)
 
-        self.lblestado = Label(self.container4, text="Estado:", font=self.fonte, width=10)
+        self.lblestado = Label(self.container4, text="UF:", font=self.fonte, width=10)
         self.lblestado.pack(side=LEFT)
         self.txtestado = Entry(self.container4, width=25, font=self.fonte)
         self.txtestado.pack(side=LEFT)
