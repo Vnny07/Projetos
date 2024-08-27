@@ -35,10 +35,7 @@ class Banco:
                     idcliente INTEGER PRIMARY KEY AUTOINCREMENT,
                     nome TEXT,
                     telefone TEXT,
-                    email TEXT,
-                    endereco TEXT,
-                    idcidade INTEGER,
-                    FOREIGN KEY (idcidade) REFERENCES cidades(idcidade)
+                    email TEXT
                 )
                 """)
 
