@@ -1,8 +1,7 @@
 from Banco import Banco
 
-class Usuarios(object):
+class Usuarios:
     def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
-        self.info = {}
         self.idusuario = idusuario
         self.nome = nome
         self.telefone = telefone
@@ -14,60 +13,51 @@ class Usuarios(object):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("insert into usuarios (nome, telefone, email, usuario, senha) values (?, ?, ?, ?, ?)",
-                      (self.nome, self.telefone, self.email, self.usuario, self.senha))
+            c.execute("""
+            INSERT INTO usuarios (nome, telefone, email, usuario, senha)
+            VALUES (?, ?, ?, ?, ?)
+            """, (self.nome, self.telefone, self.email, self.usuario, self.senha))
             banco.conexao.commit()
             c.close()
             return "Usuário cadastrado com sucesso!"
-        except:
-            return "Ocorreu um erro na inserção do usuário"
+        except Exception as e:
+            return f"Ocorreu um erro na inserção do usuário: {e}"
 
     def updateUser(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("update usuarios set nome = ?, telefone = ?, email = ?, usuario = ?, senha = ? where idusuario = ?",
-                      (self.nome, self.telefone, self.email, self.usuario, self.senha, self.idusuario))
+            c.execute("""
+            UPDATE usuarios
+            SET nome = ?, telefone = ?, email = ?, usuario = ?, senha = ?
+            WHERE idusuario = ?
+            """, (self.nome, self.telefone, self.email, self.usuario, self.senha, self.idusuario))
             banco.conexao.commit()
             c.close()
             return "Usuário atualizado com sucesso!"
-        except:
-            return "Ocorreu um erro na alteração do usuário"
+        except Exception as e:
+            return f"Ocorreu um erro na alteração do usuário: {e}"
 
     def deleteUser(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("delete from usuarios where idusuario = ?", (self.idusuario,))
+            c.execute("DELETE FROM usuarios WHERE idusuario = ?", (self.idusuario,))
             banco.conexao.commit()
             c.close()
             return "Usuário excluído com sucesso!"
-        except:
-            return "Ocorreu um erro na exclusão do usuário"
+        except Exception as e:
+            return f"Ocorreu um erro na exclusão do usuário: {e}"
 
     def selectUser(self, idusuario):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("select * from usuarios where idusuario = ?", (idusuario,))
-            for linha in c:
-                self.idusuario = linha[0]
-                self.nome = linha[1]
-                self.telefone = linha[2]
-                self.email = linha[3]
-                self.usuario = linha[4]
-                self.senha = linha[5]
+            c.execute("SELECT * FROM usuarios WHERE idusuario = ?", (idusuario,))
+            row = c.fetchone()
+            if row:
+                self.idusuario, self.nome, self.telefone, self.email, self.usuario, self.senha = row
             c.close()
-        except:
-            print("Ocorreu um erro na busca do usuário")
-
-    def listUsers(self):
-        banco = Banco()
-        try:
-            c = banco.conexao.cursor()
-            c.execute("select idusuario, nome, email from usuarios")
-            usuarios = c.fetchall()
-            c.close()
-            return usuarios
-        except:
-            return []
+            return "Busca feita com sucesso!" if row else "Usuário não encontrado."
+        except Exception as e:
+            return f"Ocorreu um erro na busca do usuário: {e}"
