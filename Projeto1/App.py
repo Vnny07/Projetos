@@ -7,7 +7,7 @@ from Clientes import Clientes
 class Application:
     def __init__(self, master=None):
         self.master = master
-        self.master.title('Tela Principal')
+        self.master.title('Cadastro')
         self.master.geometry('300x350')
 
         self.notebook = ttk.Notebook(master)
