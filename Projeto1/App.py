@@ -40,11 +40,6 @@ class Application:
         self.container7["pady"] = 5
         self.container7.pack()
 
-        self.container8 = Frame(master)
-        self.container8["padx"] = 20
-        self.container8["pady"] = 5
-        self.container8.pack()
-
         self.container9 = Frame(master)
         self.container9["pady"] = 15
         self.container9.pack()
@@ -109,16 +104,13 @@ class Application:
         self.txtsenha["font"] = self.fonte
         self.txtsenha.pack(side=LEFT)
 
-        self.lblestado = Label(self.container8, text="UF:", font=self.fonte, width=10)
-        self.lblestado.pack(side=LEFT)
-        self.txtestado = Entry(self.container8)
-        self.txtestado["width"] = 25
-        self.txtestado["font"] = self.fonte
-        self.txtestado.pack(side=LEFT)
-
         self.bntInsert = Button(self.container9, text="Inserir", font=self.fonte, width=12)
         self.bntInsert["command"] = self.inserirUsuario
         self.bntInsert.pack(side=LEFT)
+
+        self.bntCidades = Button(self.container9, text="Inserir Cidade", font=self.fonte, width=12)
+        self.bntCidades["command"] = self.abrirTelaCidades
+        self.bntCidades.pack(side=LEFT)
 
         self.bntAlterar = Button(self.container9, text="Alterar", font=self.fonte, width=12)
         self.bntAlterar["command"] = self.alterarUsuario
@@ -132,14 +124,14 @@ class Application:
         self.lblmsg["font"] = ("Verdana", "9", "italic")
         self.lblmsg.pack()
 
-        self.tree = ttk.Treeview(self.container11, columns=("id", "nome", "estado"), show='headings')
+        self.tree = ttk.Treeview(self.container11, columns=("id", "nome", "email"), show='headings')
         self.tree.heading("id", text="Código")
         self.tree.heading("nome", text="Nome")
-        self.tree.heading("estado", text="UF")
+        self.tree.heading("email", text="E-mail")
 
-        self.tree.column("id", width = 100)
-        self.tree.column("nome", width = 100)
-        self.tree.column("estado", width = 100)
+        self.tree.column("id", width=100)
+        self.tree.column("nome", width=100)
+        self.tree.column("email", width=200)
 
         self.tree.pack()
 
@@ -148,7 +140,7 @@ class Application:
     def inserirUsuario(self):
         user = Usuarios(nome=self.txtnome.get(), telefone=self.txttelefone.get(),
                         email=self.txtemail.get(), usuario=self.txtusuario.get(),
-                        senha=self.txtsenha.get(), estado=self.txtestado.get())
+                        senha=self.txtsenha.get())
         msg = user.insertUser()
         self.lblmsg["text"] = msg
         self.listarUsuarios()
@@ -156,7 +148,7 @@ class Application:
     def alterarUsuario(self):
         user = Usuarios(idusuario=self.txtidusuario.get(), nome=self.txtnome.get(), telefone=self.txttelefone.get(),
                         email=self.txtemail.get(), usuario=self.txtusuario.get(),
-                        senha=self.txtsenha.get(), estado=self.txtestado.get())
+                        senha=self.txtsenha.get())
         msg = user.updateUser()
         self.lblmsg["text"] = msg
         self.listarUsuarios()
@@ -180,8 +172,6 @@ class Application:
         self.txtusuario.insert(0, user.usuario)
         self.txtsenha.delete(0, END)
         self.txtsenha.insert(0, user.senha)
-        self.txtestado.delete(0, END)
-        self.txtestado.insert(0, user.estado)
         self.lblmsg["text"] = "Usuário encontrado"
 
     def listarUsuarios(self):
@@ -190,6 +180,12 @@ class Application:
         usuarios = user.listUsers()
         for u in usuarios:
             self.tree.insert("", END, values=(u[0], u[1], u[2]))
+
+    def abrirTelaCidades(self):
+        import Cidades
+        Cidades.root = Tk()
+        Cidades.root.title("Cadastro de Cidades")
+        CidadesApplication(master=Cidades.root)
 
 root = Tk()
 root.title("Cadastro de Usuário")

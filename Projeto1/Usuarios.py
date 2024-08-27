@@ -1,7 +1,7 @@
 from Banco import Banco
 
 class Usuarios(object):
-    def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha="", estado=""):
+    def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
         self.info = {}
         self.idusuario = idusuario
         self.nome = nome
@@ -9,14 +9,13 @@ class Usuarios(object):
         self.email = email
         self.usuario = usuario
         self.senha = senha
-        self.estado = estado
 
     def insertUser(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("insert into usuarios (nome, telefone, email, usuario, senha, estado) values (?, ?, ?, ?, ?, ?)",
-                      (self.nome, self.telefone, self.email, self.usuario, self.senha, self.estado))
+            c.execute("insert into usuarios (nome, telefone, email, usuario, senha) values (?, ?, ?, ?, ?)",
+                      (self.nome, self.telefone, self.email, self.usuario, self.senha))
             banco.conexao.commit()
             c.close()
             return "Usuário cadastrado com sucesso!"
@@ -27,8 +26,8 @@ class Usuarios(object):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("update usuarios set nome = ?, telefone = ?, email = ?, usuario = ?, senha = ?, estado = ? where idusuario = ?",
-                      (self.nome, self.telefone, self.email, self.usuario, self.senha, self.estado, self.idusuario))
+            c.execute("update usuarios set nome = ?, telefone = ?, email = ?, usuario = ?, senha = ? where idusuario = ?",
+                      (self.nome, self.telefone, self.email, self.usuario, self.senha, self.idusuario))
             banco.conexao.commit()
             c.close()
             return "Usuário atualizado com sucesso!"
@@ -58,19 +57,17 @@ class Usuarios(object):
                 self.email = linha[3]
                 self.usuario = linha[4]
                 self.senha = linha[5]
-                self.estado = linha[6]
             c.close()
-            return "Busca feita com sucesso!"
         except:
-            return "Ocorreu um erro na busca do usuário"
+            print("Ocorreu um erro na busca do usuário")
 
     def listUsers(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("select idusuario, nome, estado from usuarios")
-            users = c.fetchall()
+            c.execute("select idusuario, nome, email from usuarios")
+            usuarios = c.fetchall()
             c.close()
-            return users
+            return usuarios
         except:
-            return "Ocorreu um erro ao listar os usuários"
+            return []
