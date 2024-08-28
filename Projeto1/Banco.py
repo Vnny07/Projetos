@@ -35,7 +35,8 @@ class Banco:
                     nome TEXT,
                     telefone TEXT,
                     endereco TEXT,
-                    cpf TEXT
+                    cpf TEXT,
+                    cidade TEXT
                 )
                 """)
 
