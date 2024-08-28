@@ -1,20 +1,19 @@
 from Banco import Banco
 
 class Cidades:
-    def __init__(self, idcidade=0, nome="", estado="", pais=""):
+    def __init__(self, idcidade=0, nome="", estado=""):
         self.idcidade = idcidade
         self.nome = nome
         self.estado = estado
-        self.pais = pais
 
     def insertCidade(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
             c.execute("""
-            INSERT INTO cidades (nome, estado, pais)
-            VALUES (?, ?, ?)
-            """, (self.nome, self.estado, self.pais))
+            INSERT INTO cidades (nome, estado)
+            VALUES (?, ?)
+            """, (self.nome, self.estado))
             banco.conexao.commit()
             c.close()
             return "Cidade cadastrada com sucesso!"
@@ -27,9 +26,9 @@ class Cidades:
             c = banco.conexao.cursor()
             c.execute("""
             UPDATE cidades
-            SET nome = ?, estado = ?, pais = ?
+            SET nome = ?, estado = ?
             WHERE idcidade = ?
-            """, (self.nome, self.estado, self.pais, self.idcidade))
+            """, (self.nome, self.estado, self.idcidade))
             banco.conexao.commit()
             c.close()
             return "Cidade atualizada com sucesso!"
@@ -54,7 +53,7 @@ class Cidades:
             c.execute("SELECT * FROM cidades WHERE idcidade = ?", (idcidade,))
             row = c.fetchone()
             if row:
-                self.idcidade, self.nome, self.estado, self.pais = row
+                self.idcidade, self.nome, self.estado = row
             c.close()
             return "Busca feita com sucesso!" if row else "Cidade não encontrada."
         except Exception as e:

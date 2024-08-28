@@ -25,8 +25,7 @@ class Banco:
                 CREATE TABLE IF NOT EXISTS cidades (
                     idcidade INTEGER PRIMARY KEY AUTOINCREMENT,
                     nome TEXT,
-                    estado TEXT,
-                    pais TEXT
+                    estado TEXT
                 )
                 """)
 

@@ -115,9 +115,6 @@ class Application:
         self.container4 = Frame(self.frame_cidades, padx=20, pady=5)
         self.container4.pack()
 
-        self.container5 = Frame(self.frame_cidades, padx=20, pady=5)
-        self.container5.pack()
-
         self.container6 = Frame(self.frame_cidades, padx=20, pady=5)
         self.container6.pack()
 
@@ -149,11 +146,6 @@ class Application:
         self.lblestado.pack(side=LEFT)
         self.txtestado = Entry(self.container4, width=25, font=self.fonte)
         self.txtestado.pack(side=LEFT)
-
-        self.lblpais = Label(self.container5, text="País:", font=self.fonte, width=10)
-        self.lblpais.pack(side=LEFT)
-        self.txtpais = Entry(self.container5, width=25, font=self.fonte)
-        self.txtpais.pack(side=LEFT)
 
         self.bntInsertCidade = Button(self.container8, text="Inserir", font=self.fonte, width=12, command=self.inserirCidade)
         self.bntInsertCidade.pack(side=LEFT)
@@ -274,12 +266,12 @@ class Application:
         self.txtsenha.delete(0, END)
 
     def inserirCidade(self):
-        cidade = Cidades(nome=self.txtnomecidade.get(), estado=self.txtestado.get(), pais=self.txtpais.get())
+        cidade = Cidades(nome=self.txtnomecidade.get(), estado=self.txtestado.get())
         self.lblmsgCidade["text"] = cidade.insertCidade()
         self.limparCamposCidade()
 
     def alterarCidade(self):
-        cidade = Cidades(idcidade=self.txtidcidade.get(), nome=self.txtnomecidade.get(), estado=self.txtestado.get(), pais=self.txtpais.get())
+        cidade = Cidades(idcidade=self.txtidcidade.get(), nome=self.txtnomecidade.get(), estado=self.txtestado.get())
         self.lblmsgCidade["text"] = cidade.updateCidade()
         self.limparCamposCidade()
 
@@ -299,14 +291,11 @@ class Application:
             self.txtnomecidade.insert(INSERT, cidade.nome)
             self.txtestado.delete(0, END)
             self.txtestado.insert(INSERT, cidade.estado)
-            self.txtpais.delete(0, END)
-            self.txtpais.insert(INSERT, cidade.pais)
 
     def limparCamposCidade(self):
         self.txtidcidade.delete(0, END)
         self.txtnomecidade.delete(0, END)
         self.txtestado.delete(0, END)
-        self.txtpais.delete(0, END)
 
     def inserirCliente(self):
         cliente = Clientes(nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), email=self.txtemailcliente.get())
