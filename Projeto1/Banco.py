@@ -34,7 +34,8 @@ class Banco:
                     idcliente INTEGER PRIMARY KEY AUTOINCREMENT,
                     nome TEXT,
                     telefone TEXT,
-                    email TEXT
+                    endereco TEXT,
+                    cpf TEXT
                 )
                 """)
 

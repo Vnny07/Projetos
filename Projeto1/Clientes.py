@@ -1,20 +1,21 @@
 from Banco import Banco
 
 class Clientes:
-    def __init__(self, idcliente=0, nome="", telefone="", email=""):
+    def __init__(self, idcliente=0, nome="", telefone="", endereco="", cpf=""):
         self.idcliente = idcliente
         self.nome = nome
         self.telefone = telefone
-        self.email = email
+        self.endereco = endereco
+        self.cpf = cpf
 
     def insertCliente(self):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
             c.execute("""
-            INSERT INTO clientes (nome, telefone, email)
-            VALUES (?, ?, ?)
-            """, (self.nome, self.telefone, self.email))
+            INSERT INTO clientes (nome, telefone, endereco, cpf)
+            VALUES (?, ?, ?, ?)
+            """, (self.nome, self.telefone, self.endereco, self.cpf))
             banco.conexao.commit()
             c.close()
             return "Cliente cadastrado com sucesso!"
@@ -27,9 +28,9 @@ class Clientes:
             c = banco.conexao.cursor()
             c.execute("""
             UPDATE clientes
-            SET nome = ?, telefone = ?, email = ?
+            SET nome = ?, telefone = ?, endereco = ?, cpf = ?
             WHERE idcliente = ?
-            """, (self.nome, self.telefone, self.email, self.idcliente))
+            """, (self.nome, self.telefone, self.endereco, self.cpf, self.idcliente))
             banco.conexao.commit()
             c.close()
             return "Cliente atualizado com sucesso!"
@@ -54,7 +55,7 @@ class Clientes:
             c.execute("SELECT * FROM clientes WHERE idcliente = ?", (idcliente,))
             row = c.fetchone()
             if row:
-                self.idcliente, self.nome, self.telefone, self.email = row
+                self.idcliente, self.nome, self.telefone, self.endereco, self.cpf = row
             c.close()
             return "Busca feita com sucesso!" if row else "Cliente não encontrado."
         except Exception as e:

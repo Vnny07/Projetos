@@ -175,6 +175,9 @@ class Application:
         self.container5 = Frame(self.frame_clientes, padx=20, pady=5)
         self.container5.pack()
 
+        self.container10 = Frame(self.frame_clientes, padx=20, pady=5)
+        self.container10.pack()
+
         self.container6 = Frame(self.frame_clientes, padx=20, pady=5)
         self.container6.pack()
 
@@ -207,10 +210,15 @@ class Application:
         self.txttelefonecliente = Entry(self.container4, width=25, font=self.fonte)
         self.txttelefonecliente.pack(side=LEFT)
 
-        self.lblemailcliente = Label(self.container5, text="E-mail:", font=self.fonte, width=10)
-        self.lblemailcliente.pack(side=LEFT)
-        self.txtemailcliente = Entry(self.container5, width=25, font=self.fonte)
-        self.txtemailcliente.pack(side=LEFT)
+        self.lblenderecocliente = Label(self.container5, text="Endereço:", font=self.fonte, width=10)
+        self.lblenderecocliente.pack(side=LEFT)
+        self.txtenderecocliente = Entry(self.container5, width=25, font=self.fonte)
+        self.txtenderecocliente.pack(side=LEFT)
+
+        self.lblcpfcliente = Label(self.container10, text="CPF:", font=self.fonte, width=10)
+        self.lblcpfcliente.pack(side=LEFT)
+        self.txtcpfcliente = Entry(self.container10, width=25, font=self.fonte)
+        self.txtcpfcliente.pack(side=LEFT)
 
         self.bntInsertCliente = Button(self.container8, text="Inserir", font=self.fonte, width=12, command=self.inserirCliente)
         self.bntInsertCliente.pack(side=LEFT)
@@ -298,12 +306,12 @@ class Application:
         self.txtestado.delete(0, END)
 
     def inserirCliente(self):
-        cliente = Clientes(nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), email=self.txtemailcliente.get())
+        cliente = Clientes(nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get())
         self.lblmsgCliente["text"] = cliente.insertCliente()
         self.limparCamposCliente()
 
     def alterarCliente(self):
-        cliente = Clientes(idcliente=self.txtidcliente.get(), nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), email=self.txtemailcliente.get())
+        cliente = Clientes(idcliente=self.txtidcliente.get(), nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get())
         self.lblmsgCliente["text"] = cliente.updateCliente()
         self.limparCamposCliente()
 
@@ -323,14 +331,17 @@ class Application:
             self.txtnomecliente.insert(INSERT, cliente.nome)
             self.txttelefonecliente.delete(0, END)
             self.txttelefonecliente.insert(INSERT, cliente.telefone)
-            self.txtemailcliente.delete(0, END)
-            self.txtemailcliente.insert(INSERT, cliente.email)
+            self.txtenderecocliente.delete(0, END)
+            self.txtenderecocliente.insert(INSERT, cliente.endereco)
+            self.txtcpfcliente.delete(0, END)
+            self.txtcpfcliente.insert(INSERT, cliente.cpf)
 
     def limparCamposCliente(self):
         self.txtidcliente.delete(0, END)
         self.txtnomecliente.delete(0, END)
         self.txttelefonecliente.delete(0, END)
-        self.txtemailcliente.delete(0, END)
+        self.txtenderecocliente.delete(0, END)
+        self.txtcpfcliente.delete(0, END)
 
 if __name__ == "__main__":
     root = Tk()
