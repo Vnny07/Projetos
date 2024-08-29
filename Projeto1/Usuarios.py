@@ -1,4 +1,6 @@
 from Banco import Banco
+import tkinter as tk
+from tkinter import messagebox
 
 class Usuarios:
     def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
@@ -19,9 +21,9 @@ class Usuarios:
             """, (self.nome, self.telefone, self.email, self.usuario, self.senha))
             banco.conexao.commit()
             c.close()
-            return "Usuário cadastrado com sucesso!"
+            messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na inserção do usuário: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na inserção do usuário: {e}")
 
     def updateUser(self):
         banco = Banco()
@@ -34,9 +36,9 @@ class Usuarios:
             """, (self.nome, self.telefone, self.email, self.usuario, self.senha, self.idusuario))
             banco.conexao.commit()
             c.close()
-            return "Usuário atualizado com sucesso!"
+            messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na alteração do usuário: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na alteração do usuário: {e}")
 
     def deleteUser(self):
         banco = Banco()
@@ -45,9 +47,9 @@ class Usuarios:
             c.execute("DELETE FROM usuarios WHERE idusuario = ?", (self.idusuario,))
             banco.conexao.commit()
             c.close()
-            return "Usuário excluído com sucesso!"
+            messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na exclusão do usuário: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na exclusão do usuário: {e}")
 
     def selectUser(self, idusuario):
         banco = Banco()
@@ -57,7 +59,9 @@ class Usuarios:
             row = c.fetchone()
             if row:
                 self.idusuario, self.nome, self.telefone, self.email, self.usuario, self.senha = row
+                messagebox.showinfo("Sucesso", "Busca feita com sucesso!")
+            else:
+                messagebox.showwarning("Aviso", "Usuário não encontrado.")
             c.close()
-            return "Busca feita com sucesso!" if row else "Usuário não encontrado."
         except Exception as e:
-            return f"Ocorreu um erro na busca do usuário: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na busca do usuário: {e}")

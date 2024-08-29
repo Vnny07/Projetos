@@ -1,4 +1,6 @@
 from Banco import Banco
+import tkinter as tk
+from tkinter import messagebox
 
 class Cidades:
     def __init__(self, idcidade=0, nome="", estado=""):
@@ -16,9 +18,9 @@ class Cidades:
             """, (self.nome, self.estado))
             banco.conexao.commit()
             c.close()
-            return "Cidade cadastrada com sucesso!"
+            messagebox.showinfo("Sucesso", "Cidade cadastrada com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na inserção da cidade: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na inserção da cidade: {e}")
 
     def updateCidade(self):
         banco = Banco()
@@ -31,9 +33,9 @@ class Cidades:
             """, (self.nome, self.estado, self.idcidade))
             banco.conexao.commit()
             c.close()
-            return "Cidade atualizada com sucesso!"
+            messagebox.showinfo("Sucesso", "Cidade atualizada com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na alteração da cidade: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na alteração da cidade: {e}")
 
     def deleteCidade(self):
         banco = Banco()
@@ -42,9 +44,9 @@ class Cidades:
             c.execute("DELETE FROM cidades WHERE idcidade = ?", (self.idcidade,))
             banco.conexao.commit()
             c.close()
-            return "Cidade excluída com sucesso!"
+            messagebox.showinfo("Sucesso", "Cidade excluída com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na exclusão da cidade: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na exclusão da cidade: {e}")
 
     def selectCidade(self, idcidade):
         banco = Banco()
@@ -54,7 +56,9 @@ class Cidades:
             row = c.fetchone()
             if row:
                 self.idcidade, self.nome, self.estado = row
+                messagebox.showinfo("Sucesso", "Busca feita com sucesso!")
+            else:
+                messagebox.showwarning("Aviso", "Cidade não encontrada.")
             c.close()
-            return "Busca feita com sucesso!" if row else "Cidade não encontrada."
         except Exception as e:
-            return f"Ocorreu um erro na busca da cidade: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na busca da cidade: {e}")

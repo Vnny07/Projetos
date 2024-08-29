@@ -1,4 +1,6 @@
 from Banco import Banco
+import tkinter as tk
+from tkinter import messagebox
 
 class Clientes:
     def __init__(self, idcliente=0, nome="", telefone="", endereco="", cpf="", cidade=""):
@@ -19,9 +21,9 @@ class Clientes:
             """, (self.nome, self.telefone, self.endereco, self.cpf, self.cidade))
             banco.conexao.commit()
             c.close()
-            return "Cliente cadastrado com sucesso!"
+            messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na inserção do cliente: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na inserção do cliente: {e}")
 
     def updateCliente(self):
         banco = Banco()
@@ -34,9 +36,9 @@ class Clientes:
             """, (self.nome, self.telefone, self.endereco, self.cpf, self.cidade, self.idcliente))
             banco.conexao.commit()
             c.close()
-            return "Cliente atualizado com sucesso!"
+            messagebox.showinfo("Sucesso", "Cliente atualizado com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na alteração do cliente: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na alteração do cliente: {e}")
 
     def deleteCliente(self):
         banco = Banco()
@@ -45,9 +47,9 @@ class Clientes:
             c.execute("DELETE FROM clientes WHERE idcliente = ?", (self.idcliente,))
             banco.conexao.commit()
             c.close()
-            return "Cliente excluído com sucesso!"
+            messagebox.showinfo("Sucesso", "Cliente excluído com sucesso!")
         except Exception as e:
-            return f"Ocorreu um erro na exclusão do cliente: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na exclusão do cliente: {e}")
 
     def selectCliente(self, idcliente):
         banco = Banco()
@@ -57,7 +59,9 @@ class Clientes:
             row = c.fetchone()
             if row:
                 self.idcliente, self.nome, self.telefone, self.endereco, self.cpf, self.cidade = row
+                messagebox.showinfo("Sucesso", "Busca feita com sucesso!")
+            else:
+                messagebox.showwarning("Aviso", "Cliente não encontrado.")
             c.close()
-            return "Busca feita com sucesso!" if row else "Cliente não encontrado."
         except Exception as e:
-            return f"Ocorreu um erro na busca do cliente: {e}"
+            messagebox.showerror("Erro", f"Ocorreu um erro na busca do cliente: {e}")
