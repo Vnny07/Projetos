@@ -3,6 +3,7 @@ from tkinter import ttk
 from Usuarios import Usuarios
 from Cidades import Cidades
 from Clientes import Clientes
+import sqlite3
 
 class Application:
     def __init__(self, master=None):
@@ -223,10 +224,11 @@ class Application:
         self.txtcpfcliente = Entry(self.container10, width=25, font=self.fonte)
         self.txtcpfcliente.pack(side=LEFT)
 
-        self.lblcidadecliente = Label(self.container11, text="Cidade:", font=self.fonte, width=10)
-        self.lblcidadecliente.pack(side=LEFT)
-        self.txtcidadecliente = Entry(self.container11, width=25, font=self.fonte)
-        self.txtcidadecliente.pack(side=LEFT)
+        self.lblcidade = Label(self.container11, text="Cidade:", font=self.fonte, width=10)
+        self.lblcidade.pack(side=LEFT)
+        self.cidade_combobox = ttk.Combobox(self.container11, width=25, font=self.fonte)
+        self.cidade_combobox.pack(side=LEFT)
+        self.populate_cidade_combobox()
 
         self.bntInsertCliente = Button(self.container8, text="Inserir", font=self.fonte, width=12, command=self.inserirCliente)
         self.bntInsertCliente.pack(side=LEFT)
@@ -237,6 +239,15 @@ class Application:
 
         self.lblmsgCliente = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsgCliente.pack()
+
+    def populate_cidade_combobox(self):
+        conn = sqlite3.connect('banco.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome FROM cidades")
+        cidades = cursor.fetchall()
+        conn.close()
+
+        self.cidade_combobox['values'] = [cidade[0] for cidade in cidades]
 
     def inserirUsuario(self):
         user = Usuarios(nome=self.txtnome.get(), telefone=self.txttelefone.get(), email=self.txtemail.get(),
