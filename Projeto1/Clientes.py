@@ -1,6 +1,5 @@
-from Banco import Banco
-import tkinter as tk
 from tkinter import messagebox
+from Banco import Banco
 
 class Clientes:
     def __init__(self, idcliente=0, nome="", telefone="", endereco="", cpf="", cidade=""):
@@ -59,9 +58,7 @@ class Clientes:
             row = c.fetchone()
             if row:
                 self.idcliente, self.nome, self.telefone, self.endereco, self.cpf, self.cidade = row
-                messagebox.showinfo("Sucesso", "Busca feita com sucesso!")
-            else:
-                messagebox.showwarning("Aviso", "Cliente não encontrado.")
             c.close()
+            messagebox.showinfo("Sucesso", "Busca feita com sucesso!") if row else messagebox.showwarning("Aviso", "Cliente não encontrado.")
         except Exception as e:
             messagebox.showerror("Erro", f"Ocorreu um erro na busca do cliente: {e}")

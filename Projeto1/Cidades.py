@@ -1,6 +1,5 @@
-from Banco import Banco
-import tkinter as tk
 from tkinter import messagebox
+from Banco import Banco
 
 class Cidades:
     def __init__(self, idcidade=0, nome="", estado=""):
@@ -56,9 +55,7 @@ class Cidades:
             row = c.fetchone()
             if row:
                 self.idcidade, self.nome, self.estado = row
-                messagebox.showinfo("Sucesso", "Busca feita com sucesso!")
-            else:
-                messagebox.showwarning("Aviso", "Cidade não encontrada.")
             c.close()
+            messagebox.showinfo("Sucesso", "Busca feita com sucesso!") if row else messagebox.showwarning("Aviso", "Cidade não encontrada.")
         except Exception as e:
             messagebox.showerror("Erro", f"Ocorreu um erro na busca da cidade: {e}")
