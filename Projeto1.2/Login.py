@@ -11,7 +11,7 @@ class LoginApp:
         self.master.title("Login")
         self.master.geometry("300x250")
 
-        label = tk.Label(master, text="Login", font=("Arial", 24, "bold"))
+        label = tk.Label(master, text="Efetue o login", font=("Arial", 24, "bold"))
         label.pack(pady=20)
 
         frame = tk.Frame(master)
