@@ -79,7 +79,7 @@ class CidadesApp:
     def __init__(self, master=None):
         self.master = master
         self.master.title('Cadastro de Cidades')
-        self.master.geometry('600x475')
+        self.master.geometry('600x530')
 
         self.fonte = ("Verdana", "8")
 
@@ -143,7 +143,11 @@ class CidadesApp:
         self.listaCidades = ttk.Treeview(self.container10, columns=("id", "nome", "estado"), show="headings")
         self.listaCidades.heading("id", text="ID")
         self.listaCidades.heading("nome", text="Nome")
-        self.listaCidades.heading("estado", text="E-mail")
+        self.listaCidades.heading("estado", text="Estado")
+        self.listaCidades.column("id", width=50)
+        self.listaCidades.column("nome", width=200)
+        self.listaCidades.column("estado", width=200)
+
         self.listaCidades.pack()
 
         self.carregarCidades()

@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
-from tkinter import ttk
 from Banco import Banco
+from tkinter import ttk
 import sqlite3
 
 class Clientes:
@@ -66,11 +66,23 @@ class Clientes:
         except Exception as e:
             messagebox.showerror("Erro", f"Ocorreu um erro na busca do cliente: {e}")
 
+    def fetchAllUsers():
+        banco = Banco()
+        try:
+            c = banco.conexao.cursor()
+            c.execute("SELECT idcliente, nome, cidade FROM clientes")
+            rows = c.fetchall()
+            c.close()
+            return rows
+        except Exception as e:
+            messagebox.showerror("Erro", f"Ocorreu um erro na busca dos clientes: {e}")
+            return []
+
 class ClientesApp:
     def __init__(self, master=None):
         self.master = master
         self.master.title('Cadastro de Clientes')
-        self.master.geometry('350x350')
+        self.master.geometry('600x600')
 
         self.fonte = ("Verdana", "8")
 
@@ -106,6 +118,9 @@ class ClientesApp:
 
         self.container9 = Frame(self.master, pady=15)
         self.container9.pack()
+
+        self.container12 = Frame(self.master, pady=15)
+        self.container12.pack()
 
         self.titulo = Label(self.container1, text="Informe os dados:", font=("Calibri", "9", "bold"))
         self.titulo.pack()
@@ -156,6 +171,21 @@ class ClientesApp:
 
         self.lblmsgCliente = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsgCliente.pack()
+
+        self.listaClientes = ttk.Treeview(self.container12, columns=("id", "nome", "cidade"), show="headings")
+        self.listaClientes.heading("id", text="ID")
+        self.listaClientes.heading("nome", text="Nome")
+        self.listaClientes.heading("cidade", text="Cidade")
+        self.listaClientes.column("id", width=50)
+        self.listaClientes.column("nome", width=200)
+        self.listaClientes.column("cidade", width=200)
+        self.listaClientes.pack()
+
+        self.carregarClientes()
+
+    def carregarClientes(self):
+        for row in Clientes.fetchAllUsers():
+            self.listaClientes.insert("", "end", values=row)
 
     def mostrarcidades(self):
         banco = None
