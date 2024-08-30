@@ -23,7 +23,7 @@ root = tk.Tk()
 root.geometry("400x300")
 root.title("Cadastro")
 
-label = tk.Label(root, text="Menu", font=("Arial", 24, "bold"))
+label = tk.Label(root, text="Menu principal", font=("Arial", 24, "bold"))
 label.pack(pady=20)
 
 button_frame = tk.Frame(root)

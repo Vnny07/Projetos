@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from Banco import Banco
+from tkinter import ttk
 import sqlite3
 
 class Usuarios:
@@ -65,11 +66,23 @@ class Usuarios:
         except Exception as e:
             messagebox.showerror("Erro", f"Ocorreu um erro na busca do usuário: {e}")
 
+    def fetchAllUsers():
+        banco = Banco()
+        try:
+            c = banco.conexao.cursor()
+            c.execute("SELECT idusuario, nome, email FROM usuarios")
+            rows = c.fetchall()
+            c.close()
+            return rows
+        except Exception as e:
+            messagebox.showerror("Erro", f"Ocorreu um erro na busca dos usuários: {e}")
+            return []
+
 class UsuariosApp:
     def __init__(self, master=None):
         self.master = master
         self.master.title('Cadastro de Usuarios')
-        self.master.geometry('300x350')
+        self.master.geometry('600x600')
 
         self.fonte = ("Verdana", "8")
 
@@ -99,6 +112,9 @@ class UsuariosApp:
 
         self.container9 = Frame(master, pady=15)
         self.container9.pack()
+
+        self.container10 = Frame(master, pady=15)
+        self.container10.pack()
 
         self.titulo = Label(self.container1, text="Informe os dados:", font=("Calibri", "9", "bold"))
         self.titulo.pack()
@@ -146,6 +162,21 @@ class UsuariosApp:
 
         self.lblmsg = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsg.pack()
+
+        self.listaUsuarios = ttk.Treeview(self.container10, columns=("id", "nome", "email"), show="headings")
+        self.listaUsuarios.heading("id", text="ID")
+        self.listaUsuarios.heading("nome", text="Nome")
+        self.listaUsuarios.heading("email", text="E-mail")
+        self.listaUsuarios.column("id", width=50)
+        self.listaUsuarios.column("nome", width=200)
+        self.listaUsuarios.column("email", width=200)
+        self.listaUsuarios.pack()
+
+        self.carregarUsuarios()
+
+    def carregarUsuarios(self):
+        for row in Usuarios.fetchAllUsers():
+            self.listaUsuarios.insert("", "end", values=row)
 
     def inserirUsuario(self):
         user = Usuarios(nome=self.txtnome.get(), telefone=self.txttelefone.get(), email=self.txtemail.get(),
