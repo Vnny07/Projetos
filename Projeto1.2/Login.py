@@ -17,7 +17,7 @@ class LoginApp:
         frame = tk.Frame(master)
         frame.pack(pady=20)
 
-        self.label_email = tk.Label(frame, text="Email:")
+        self.label_email = tk.Label(frame, text="E-mail:")
         self.label_email.grid(row=0, column=0, padx=5, pady=5)
 
         self.entry_email = tk.Entry(frame)
@@ -47,7 +47,7 @@ class LoginApp:
             self.master.destroy()
             self.abrir_menu()
         else:
-            messagebox.showerror("Erro", "Email ou senha incorretos!")
+            messagebox.showerror("Erro", "E-mail ou senha incorretos!")
 
         conn.close()
 
