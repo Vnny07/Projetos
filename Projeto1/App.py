@@ -1,8 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+from Banco import Banco
 from Usuarios import Usuarios
 from Cidades import Cidades
 from Clientes import Clientes
+import sqlite3
 
 class Application:
     def __init__(self, master=None):
@@ -225,8 +227,9 @@ class Application:
 
         self.lblcidadecliente = Label(self.container11, text="Cidade:", font=self.fonte, width=10)
         self.lblcidadecliente.pack(side=LEFT)
-        self.txtcidadecliente = Entry(self.container11, width=25, font=self.fonte)
-        self.txtcidadecliente.pack(side=LEFT)
+        self.cmbcidadecliente = ttk.Combobox(self.container11, width=23, font=self.fonte)
+        self.cmbcidadecliente.pack(side=LEFT)
+        self.mostrarcidades()
 
         self.bntInsertCliente = Button(self.container8, text="Inserir", font=self.fonte, width=12, command=self.inserirCliente)
         self.bntInsertCliente.pack(side=LEFT)
@@ -237,6 +240,30 @@ class Application:
 
         self.lblmsgCliente = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsgCliente.pack()
+
+    def mostrarcidades(self):
+        banco = None
+        try:
+            banco = Banco()
+            conn = banco.conexao
+
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT nome FROM cidades")
+
+            cidades = cursor.fetchall()
+
+            self.cmbcidadecliente['values'] = []
+
+            for cidade in cidades:
+                self.cmbcidadecliente['values'] = (*self.cmbcidadecliente['values'], cidade[0])
+
+        except sqlite3.Error as e:
+            print(f"Erro ao buscar as cidades: {e}")
+
+        finally:
+            if banco:
+                banco.close()
 
     def inserirUsuario(self):
         user = Usuarios(nome=self.txtnome.get(), telefone=self.txttelefone.get(), email=self.txtemail.get(),
@@ -314,12 +341,12 @@ class Application:
         self.txtestado.delete(0, END)
 
     def inserirCliente(self):
-        cliente = Clientes(nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get(), cidade=self.txtcidadecliente.get())
+        cliente = Clientes(nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get(), cidade=self.cmbcidadecliente.get())
         self.lblmsgCliente["text"] = cliente.insertCliente()
         self.limparCamposCliente()
 
     def alterarCliente(self):
-        cliente = Clientes(idcliente=self.txtidcliente.get(), nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get(), cidade=self.txtcidadecliente.get())
+        cliente = Clientes(idcliente=self.txtidcliente.get(), nome=self.txtnomecliente.get(), telefone=self.txttelefonecliente.get(), endereco=self.txtenderecocliente.get(), cpf=self.txtcpfcliente.get(), cidade=self.cmbcidadecliente.get())
         self.lblmsgCliente["text"] = cliente.updateCliente()
         self.limparCamposCliente()
 
@@ -343,8 +370,7 @@ class Application:
             self.txtenderecocliente.insert(INSERT, cliente.endereco)
             self.txtcpfcliente.delete(0, END)
             self.txtcpfcliente.insert(INSERT, cliente.cpf)
-            self.txtcidadecliente.delete(0, END)
-            self.txtcidadecliente.insert(INSERT, cliente.cidade)
+            self.cmbcidadecliente.set(cliente.cidade)
 
     def limparCamposCliente(self):
         self.txtidcliente.delete(0, END)
@@ -352,7 +378,7 @@ class Application:
         self.txttelefonecliente.delete(0, END)
         self.txtenderecocliente.delete(0, END)
         self.txtcpfcliente.delete(0, END)
-        self.txtcidadecliente.delete(0, END)
+        self.cmbcidadecliente.set('')
 
 if __name__ == "__main__":
     root = Tk()
