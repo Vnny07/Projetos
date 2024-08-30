@@ -172,11 +172,22 @@ class UsuariosApp:
         self.listaUsuarios.column("email", width=200)
         self.listaUsuarios.pack()
 
+        self.listaUsuarios.bind("<<TreeviewSelect>>", self.on_treeview_select)
+
         self.carregarUsuarios()
 
     def carregarUsuarios(self):
         for row in Usuarios.fetchAllUsers():
             self.listaUsuarios.insert("", "end", values=row)
+
+    def on_treeview_select(self, event):
+        selected_item = self.listaUsuarios.selection()
+        if selected_item:
+            item = self.listaUsuarios.item(selected_item)
+            idusuario = item['values'][0]
+            self.txtidusuario.delete(0, END)
+            self.txtidusuario.insert(INSERT, idusuario)
+            self.buscarUsuario()
 
     def inserirUsuario(self):
         user = Usuarios(nome=self.txtnome.get(), telefone=self.txttelefone.get(), email=self.txtemail.get(),

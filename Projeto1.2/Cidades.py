@@ -147,14 +147,24 @@ class CidadesApp:
         self.listaCidades.column("id", width=50)
         self.listaCidades.column("nome", width=200)
         self.listaCidades.column("estado", width=200)
-
         self.listaCidades.pack()
+
+        self.listaCidades.bind("<<TreeviewSelect>>", self.on_treeview_select)
 
         self.carregarCidades()
 
     def carregarCidades(self):
         for row in Cidades.fetchAllUsers():
             self.listaCidades.insert("", "end", values=row)
+
+    def on_treeview_select(self, event):
+        selected_item = self.listaCidades.selection()
+        if selected_item:
+            item = self.listaCidades.item(selected_item)
+            idcidade = item['values'][0]
+            self.txtidcidade.delete(0, END)
+            self.txtidcidade.insert(INSERT, idcidade)
+            self.buscarCidade()
 
     def inserirCidade(self):
         cidade = Cidades(nome=self.txtnomecidade.get(), estado=self.txtestado.get())

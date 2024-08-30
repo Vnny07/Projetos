@@ -181,11 +181,22 @@ class ClientesApp:
         self.listaClientes.column("cidade", width=200)
         self.listaClientes.pack()
 
+        self.listaClientes.bind("<<TreeviewSelect>>", self.on_treeview_select)
+
         self.carregarClientes()
 
     def carregarClientes(self):
         for row in Clientes.fetchAllUsers():
             self.listaClientes.insert("", "end", values=row)
+
+    def on_treeview_select(self, event):
+        selected_item = self.listaClientes.selection()
+        if selected_item:
+            item = self.listaClientes.item(selected_item)
+            idcliente = item['values'][0]
+            self.txtidcliente.delete(0, END)
+            self.txtidcliente.insert(INSERT, idcliente)
+            self.buscarCliente()
 
     def mostrarcidades(self):
         banco = None
