@@ -9,7 +9,7 @@ from Usuarios import UsuariosApp
 class LoginApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("Login")
+        self.master.title("Entrar")
         self.master.geometry("300x210")
 
         label = tk.Label(master, text="Efetue o login", font=("Arial", 24, "bold"))
@@ -33,7 +33,7 @@ class LoginApp:
         button_frame = tk.Frame(master)
         button_frame.pack(pady=10)
 
-        self.login_button = tk.Button(button_frame, text="Entrar", command=self.fazer_login)
+        self.login_button = tk.Button(button_frame, text="Login", command=self.fazer_login)
         self.login_button.grid(row=0, column=0, padx=5)
 
         self.cadastro_button = tk.Button(button_frame, text="Cadastrar", command=self.abrir_cadastro_usuarios)
