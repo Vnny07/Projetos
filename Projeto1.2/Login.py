@@ -4,8 +4,6 @@ import sqlite3
 from Menu import MenuApp
 from Usuarios import UsuariosApp
 
-# E-MAIL E SENHA PARA O LOGIN -> vinicius@email.com | 123456
-
 class LoginApp:
     def __init__(self, master):
         self.master = master
