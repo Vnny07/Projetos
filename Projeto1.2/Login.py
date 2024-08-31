@@ -46,20 +46,24 @@ class LoginApp:
         email = self.entry_email.get()
         senha = self.entry_senha.get()
 
-        conn = sqlite3.connect('banco.db')
-        c = conn.cursor()
+        try:
+            conn = sqlite3.connect('banco.db')
+            c = conn.cursor()
 
-        c.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?", (email, senha))
-        usuario = c.fetchone()
+            c.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?", (email, senha))
+            usuario = c.fetchone()
 
-        if usuario:
-            messagebox.showinfo("Sucesso", "Login efetuado com sucesso!")
-            self.master.destroy()
-            self.abrir_menu()
-        else:
-            messagebox.showerror("Erro", "E-mail ou senha incorretos!")
+            if usuario:
+                messagebox.showinfo("Sucesso", "Login efetuado com sucesso!")
+                self.master.destroy()
+                self.abrir_menu()
+            else:
+                messagebox.showerror("Erro", "E-mail ou senha incorretos!")
 
-        conn.close()
+            conn.close()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Erro", "Erro ao conectar ao banco de dados. Verifique se o banco de dados existe.")
 
     def abrir_menu(self):
         menu_root = tk.Tk()
