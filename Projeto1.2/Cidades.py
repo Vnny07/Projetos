@@ -43,10 +43,17 @@ class Cidades:
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            c.execute("DELETE FROM cidades WHERE idcidade = ?", (self.idcidade,))
-            banco.conexao.commit()
+            c.execute("SELECT COUNT(*) FROM clientes WHERE cidade = (SELECT nome FROM cidades WHERE idcidade = ?)",
+                      (self.idcidade,))
+            resultado = c.fetchone()
+            if resultado[0] > 0:
+                messagebox.showerror("Erro",
+                                     "Não é possível excluir a cidade, pois está associada a um ou mais clientes.")
+            else:
+                c.execute("DELETE FROM cidades WHERE idcidade = ?", (self.idcidade,))
+                banco.conexao.commit()
+                messagebox.showinfo("Sucesso", "Cidade excluída com sucesso!")
             c.close()
-            messagebox.showinfo("Sucesso", "Cidade excluída com sucesso!")
         except Exception as e:
             messagebox.showerror("Erro", f"Ocorreu um erro na exclusão da cidade: {e}")
 
