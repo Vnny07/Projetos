@@ -2,7 +2,11 @@ from tkinter import *
 from tkinter import messagebox
 from Banco import Banco
 from tkinter import ttk
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import sqlite3
+import os
+import webbrowser
 
 class Usuarios:
     def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
