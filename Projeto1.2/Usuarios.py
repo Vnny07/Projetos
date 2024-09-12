@@ -2,7 +2,10 @@ from tkinter import *
 from tkinter import messagebox
 from Banco import Banco
 from tkinter import ttk
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import sqlite3
+import os
 
 class Usuarios:
     def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
@@ -157,6 +160,10 @@ class UsuariosApp:
         self.bntAlterar.pack(side=LEFT)
         self.bntExcluir = Button(self.container8, text="Excluir", font=self.fonte, width=12, command=self.excluirUsuario)
         self.bntExcluir.pack(side=LEFT)
+        self.btnGerarPDF = Button(self.container8, text="Gerar PDF", font=self.fonte, width=12, command=self.gerarPDF)
+        self.btnGerarPDF.pack(side=LEFT)
+        self.btnVisualizarPDF = Button(self.container8, text="Visualizar PDF", font=self.fonte, width=12, command=self.visualizarPDF)
+        self.btnVisualizarPDF.pack(side=LEFT)
 
         self.lblmsg = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsg.pack()
@@ -173,6 +180,34 @@ class UsuariosApp:
         self.listaUsuarios.bind("<<TreeviewSelect>>", self.on_treeview_select)
 
         self.carregarUsuarios()
+
+    def gerarPDF(self):
+        user = Usuarios(idusuario=self.txtidusuario.get(), nome=self.txtnome.get(), telefone=self.txttelefone.get(),
+                        email=self.txtemail.get(), usuario=self.txtusuario.get(), senha=self.txtsenha.get())
+        pdf_filename = f"Usuario{user.idusuario}.pdf"
+        try:
+            c = canvas.Canvas(pdf_filename, pagesize=letter)
+            c.drawString(100, 750, f"ID: {user.idusuario}")
+            c.drawString(100, 730, f"Nome: {user.nome}")
+            c.drawString(100, 710, f"Telefone: {user.telefone}")
+            c.drawString(100, 690, f"E-mail: {user.email}")
+            c.drawString(100, 670, f"Usuário: {user.usuario}")
+            c.showPage()
+            c.save()
+            messagebox.showinfo("Sucesso", f"PDF '{pdf_filename}' gerado com sucesso!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar PDF: {e}")
+
+    def visualizarPDF(self):
+        user = Usuarios(idusuario=self.txtidusuario.get())
+        pdf_filename = f"Usuario{user.idusuario}.pdf"
+        try:
+            if os.path.exists(pdf_filename):
+                os.system(f"start {pdf_filename}")
+            else:
+                messagebox.showerror("Erro", f"O arquivo '{pdf_filename}' não foi encontrado.")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao abrir o PDF: {e}")
 
     def carregarUsuarios(self):
         for row in Usuarios.fetchAllUsers():
