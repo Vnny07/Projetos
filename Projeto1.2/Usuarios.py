@@ -2,11 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from Banco import Banco
 from tkinter import ttk
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import sqlite3
-import os
-import webbrowser
 
 class Usuarios:
     def __init__(self, idusuario=0, nome="", telefone="", email="", usuario="", senha=""):
@@ -161,10 +157,6 @@ class UsuariosApp:
         self.bntAlterar.pack(side=LEFT)
         self.bntExcluir = Button(self.container8, text="Excluir", font=self.fonte, width=12, command=self.excluirUsuario)
         self.bntExcluir.pack(side=LEFT)
-        self.bntGPDF = Button(self.container8, text="Gerar PDF", font=self.fonte, width=12, command=self.gerarPDF)
-        self.bntGPDF.pack(side=LEFT)
-        self.bntVPDF = Button(self.container8, text="Visualizar PDF", font=self.fonte, width=12, command=self.visualizarPDF)
-        self.bntVPDF.pack(side=LEFT)
 
         self.lblmsg = Label(self.container9, text="", font=("Verdana", "9", "italic"))
         self.lblmsg.pack()
@@ -211,39 +203,6 @@ class UsuariosApp:
         user = Usuarios(idusuario=self.txtidusuario.get())
         self.lblmsg["text"] = user.deleteUser()
         self.limparCamposUsuario()
-
-    def gerarPDF(self):
-        idusuario = self.txtidusuario.get()
-        if not idusuario:
-            messagebox.showwarning("Aviso", "Nenhum usuário selecionado")
-            return
-
-        usuario = Usuarios()
-        usuario.selectUser(int(idusuario))
-
-        pdf_path = f'usuario_{idusuario}.pdf'
-        c = canvas.Canvas(pdf_path, pagesize=letter)
-        c.drawString(100, 750, f"ID: {usuario.idusuario}")
-        c.drawString(100, 730, f"Nome: {usuario.nome}")
-        c.drawString(100, 710, f"Telefone: {usuario.telefone}")
-        c.drawString(100, 690, f"E-mail: {usuario.email}")
-        c.drawString(100, 670, f"Usuário: {usuario.usuario}")
-        c.drawString(100, 650, f"Senha: {usuario.senha}")
-        c.save()
-
-        messagebox.showinfo("Sucesso", f"PDF gerado com sucesso: {pdf_path}")
-
-    def visualizarPDF(self):
-        idusuario = self.txtidusuario.get()
-        if not idusuario:
-            messagebox.showwarning("Aviso", "Nenhum usuário selecionado")
-            return
-
-        pdf_path = f'usuario_{idusuario}.pdf'
-        if os.path.exists(pdf_path):
-            webbrowser.open(pdf_path)
-        else:
-            messagebox.showerror("Erro", "Arquivo PDF não encontrado")
 
     def buscarUsuario(self):
         user = Usuarios()
