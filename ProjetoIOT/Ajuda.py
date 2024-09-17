@@ -5,7 +5,7 @@ def janela_ajuda():
     janela_ajuda.title("Ajuda")
     janela_ajuda.geometry("350x300")
     janela_ajuda.resizable(False, False)
-    janela_ajuda.iconbitmap("Icon.ico")
+    janela_ajuda.iconbitmap("ICO1.ico")
 
     frame_texto = tk.Frame(janela_ajuda)
     frame_texto.pack(expand=True, fill="both")

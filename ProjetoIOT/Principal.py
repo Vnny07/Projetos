@@ -27,8 +27,8 @@ janela.title("Controle de Água")
 janela.geometry("275x305")
 janela.resizable(False, False)
 
-imagem = tk.PhotoImage(file="Img.png")
-janela.iconbitmap("Icon.ico")
+imagem = tk.PhotoImage(file="IMG1.png")
+janela.iconbitmap("ICO1.ico")
 
 label_imagem = tk.Label(janela, image=imagem)
 label_imagem.pack(pady=10)

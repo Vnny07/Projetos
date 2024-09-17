@@ -5,7 +5,7 @@ def janela_fluxo():
     janela_fluxo.title("Fluxo Atual")
     janela_fluxo.geometry("275x100")
     janela_fluxo.resizable(False, False)
-    janela_fluxo.iconbitmap("Icon.ico")
+    janela_fluxo.iconbitmap("ICO1.ico")
 
     frame_fluxo = tk.Frame(janela_fluxo)
     frame_fluxo.pack(expand=True, fill="both", padx=10, pady=10)
