@@ -11,7 +11,7 @@ def verificar_conexao(url="http://www.google.com"):
 
 def janela_conexao():
     janela_conexao = tk.Toplevel()
-    janela_conexao.title("Iniciando")
+    janela_conexao.title("Iniciador")
     janela_conexao.geometry("250x65")
     janela_conexao.iconbitmap("Icon.ico")
     janela_conexao.resizable(False, False)
