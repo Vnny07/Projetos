@@ -22,11 +22,11 @@ def janela_conexao():
     conectado = verificar_conexao()
 
     if conectado:
-        label_status.config(text="Conexão bem-sucedida")
-        janela_conexao.after(1000, lambda: subprocess.Popen(['python', 'Principal.py']))
-        janela_conexao.after(1000, janela_conexao.destroy)
+        label_status.config(text="Conexão bem-sucedida!")
+        janela_conexao.after(1500, lambda: subprocess.Popen(['python', 'Principal.py']))
+        janela_conexao.after(1500, janela_conexao.destroy)
     else:
-        label_status.config(text="Não foi possível conectar")
+        label_status.config(text="Não foi possível conectar.")
         janela_conexao.after(3000, janela_conexao.destroy)
 
     janela_conexao.mainloop()
