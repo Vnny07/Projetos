@@ -1,6 +1,8 @@
 import tkinter as tk
 import subprocess
 import urllib.request
+import time
+import sys
 
 def verificar_conexao(url="http://www.google.com"):
     try:
@@ -15,11 +17,12 @@ def atualizar_status_conexao(label_status):
     if conectado:
         label_status.config(text="Conexão bem-sucedida!")
         label_status.after(1500, lambda: subprocess.Popen(['python', 'Principal.py']))
-        label_status.after(1500, label_status.master.destroy)
+        label_status.after(1500, lambda: janela_conexao.master.destroy())
     else:
         label_status.config(text="Não foi possível conectar :(")
 
 def janela_conexao():
+    global janela_conexao
     janela_conexao = tk.Toplevel()
     janela_conexao.title("Iniciador")
     janela_conexao.geometry("250x65")
@@ -31,6 +34,7 @@ def janela_conexao():
 
     janela_conexao.after(2000, lambda: atualizar_status_conexao(label_status))
 
+    janela_conexao.protocol("WM_DELETE_WINDOW", lambda: sys.exit())
     janela_conexao.mainloop()
 
 if __name__ == "__main__":
