@@ -9,6 +9,16 @@ def verificar_conexao(url="http://www.google.com"):
     except urllib.request.URLError:
         return False
 
+def atualizar_status_conexao(label_status):
+    conectado = verificar_conexao()
+
+    if conectado:
+        label_status.config(text="Conexão bem-sucedida!")
+        label_status.after(1500, lambda: subprocess.Popen(['python', 'Principal.py']))
+        label_status.after(1500, label_status.master.destroy)
+    else:
+        label_status.config(text="Não foi possível conectar :(")
+
 def janela_conexao():
     janela_conexao = tk.Toplevel()
     janela_conexao.title("Iniciador")
@@ -19,14 +29,7 @@ def janela_conexao():
     label_status = tk.Label(janela_conexao, text="Conectando...", font=("Arial", 12))
     label_status.pack(pady=20)
 
-    conectado = verificar_conexao()
-
-    if conectado:
-        label_status.config(text="Conexão bem-sucedida!")
-        janela_conexao.after(1500, lambda: subprocess.Popen(['python', 'Principal.py']))
-        janela_conexao.after(1500, janela_conexao.destroy)
-    else:
-        label_status.config(text="Não foi possível conectar :(")
+    janela_conexao.after(2000, lambda: atualizar_status_conexao(label_status))
 
     janela_conexao.mainloop()
 
