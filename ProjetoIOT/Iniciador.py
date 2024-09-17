@@ -25,7 +25,7 @@ def janela_conexao():
     janela_conexao = tk.Toplevel()
     janela_conexao.title("Iniciador")
     janela_conexao.geometry("250x65")
-    janela_conexao.iconbitmap("ICO2.ico")
+    janela_conexao.iconbitmap("ICO1.ico")
     janela_conexao.resizable(False, False)
 
     label_status = tk.Label(janela_conexao, text="Conectando...", font=("Arial", 12))
