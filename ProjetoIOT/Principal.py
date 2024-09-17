@@ -1,12 +1,9 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
-import Ajuda
+import os
 import Fluxo
 import Limite
 import Historico
-
-def abrir_ajuda():
-    Ajuda.janela_ajuda()
 
 def abrir_fluxo():
     Fluxo.janela_fluxo()
@@ -16,6 +13,9 @@ def abrir_limite():
 
 def abrir_historico():
     Historico.janela_historico()
+
+def abrir_ajuda():
+    os.startfile("Ajuda.txt")
 
 def confirmar_sair():
     resposta = messagebox.askquestion("Sair", "Confirmar saída do programa?")
