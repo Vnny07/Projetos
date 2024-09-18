@@ -24,7 +24,7 @@ def janela_limite():
 
     janela_limite = tk.Toplevel()
     janela_limite.title("Limite de Consumo")
-    janela_limite.geometry("300x125")
+    janela_limite.geometry("250x125")
     janela_limite.iconbitmap("ICO1.ico")
     janela_limite.resizable(False, False)
 
