@@ -21,7 +21,6 @@ def janela_historico():
 
     tabela_historico.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
-
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
