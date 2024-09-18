@@ -4,15 +4,6 @@ import tkinter.messagebox as messagebox
 limite_aplicado = False
 
 def janela_limite():
-    def aplicar_limite():
-        global limite_aplicado
-        limite = entrada_limite.get()
-        if limite:
-            messagebox.showinfo("Sucesso", f"Limite de consumo aplicado: {limite} L")
-            limite_aplicado = True
-        else:
-            messagebox.showwarning("Erro", "Por favor, insira um valor válido.")
-
     def fechar_janela():
         if not limite_aplicado:
             resposta = messagebox.askquestion("Sair", "Algumas alterações não foram aplicadas.\n"
@@ -37,7 +28,7 @@ def janela_limite():
     frame_botoes = tk.Frame(janela_limite)
     frame_botoes.pack(pady=5)
 
-    btn_aplicar = tk.Button(frame_botoes, text="Aplicar", width=10, command=aplicar_limite)
+    btn_aplicar = tk.Button(frame_botoes, text="Aplicar", width=10)
     btn_aplicar.pack(side=tk.LEFT, padx=5)
 
     btn_ok = tk.Button(frame_botoes, text="OK", width=10, command=fechar_janela)
