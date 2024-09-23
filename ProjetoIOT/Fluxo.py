@@ -1,4 +1,10 @@
 import tkinter as tk
+import tkinter.messagebox as messagebox
+import os
+
+if 'Iniciador' not in os.environ:
+    tk.messagebox.showerror("Erro", "Ocorreu um erro durante a execução do programa.")
+    exit()
 
 def janela_fluxo():
     janela_fluxo = tk.Toplevel()

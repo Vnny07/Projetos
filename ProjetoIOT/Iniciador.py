@@ -2,6 +2,9 @@ import tkinter as tk
 import subprocess
 import urllib.request
 import sys
+import os
+
+os.environ['Iniciador'] = '1'
 
 def verificar_conexao(url="http://www.google.com"):
     try:

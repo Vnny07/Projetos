@@ -1,5 +1,11 @@
 import tkinter as tk
+import tkinter.messagebox as messagebox
 from tkinter import ttk
+import os
+
+if 'Iniciador' not in os.environ:
+    tk.messagebox.showerror("Erro", "Ocorreu um erro durante a execução do programa.")
+    exit()
 
 def janela_historico():
     janela_historico = tk.Toplevel()
