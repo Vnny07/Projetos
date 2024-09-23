@@ -32,6 +32,7 @@ janela.geometry("275x305")
 janela.resizable(False, False)
 imagem = tk.PhotoImage(file="IMG1.png")
 janela.iconbitmap("ICO1.ico")
+janela.protocol("WM_DELETE_WINDOW", confirmar_sair)
 
 label_imagem = tk.Label(janela, image=imagem)
 label_imagem.pack(pady=10)
