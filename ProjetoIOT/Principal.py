@@ -6,7 +6,7 @@ import Limite
 import Historico
 
 if 'Iniciador' not in os.environ:
-    tk.messagebox.showerror("Erro", "Ocorreu um erro durante a execução do programa.")
+    tk.messagebox.showerror("Erro", "Não foi possível executar o programa.")
     exit()
 
 def abrir_fluxo():
