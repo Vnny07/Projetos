@@ -21,7 +21,8 @@ def atualizar_status_conexao(label_status):
         label_status.after(1500, lambda: subprocess.Popen(['python', 'Principal.py']))
         label_status.after(1500, lambda: janela_conexao.master.destroy())
     else:
-        label_status.config(text="Não foi possível conectar :(")
+        label_status.after(3000, lambda: label_status.config(text="Não foi possível conectar 🙁"))
+        label_status.after(5000, lambda: atualizar_status_conexao(label_status))
 
 def janela_conexao():
     global janela_conexao
