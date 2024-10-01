@@ -23,6 +23,7 @@ def janela_limite():
     janela_limite.geometry("250x125")
     janela_limite.iconbitmap("ICO1.ico")
     janela_limite.resizable(False, False)
+    janela_limite.protocol("WM_DELETE_WINDOW", fechar_janela)
 
     label_limite = tk.Label(janela_limite, text="Defina o limite de consumo (L):")
     label_limite.pack(pady=10)
