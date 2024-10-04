@@ -8,22 +8,32 @@ janela.title("Controle de Água")
 janela.geometry("325x525")
 
 janela.iconbitmap("ICO1.ico")
-
 janela.resizable(False, False)
+
+bg_img = tk.PhotoImage(file="IMG1.png")
+label_bg = tk.Label(janela, image=bg_img)
+label_bg.place(relx=0.5, rely=0.8, anchor='center')
 
 img1 = tk.PhotoImage(file="ICO2.png")
 img2 = tk.PhotoImage(file="ICO3.png")
 
 small_font = ("Arial", 8, "bold")
+img_esquerda = tk.PhotoImage(file="IMG2.png")
 
-label_codigo = tk.Label(janela, text="Código: 002", font=small_font)
-label_codigo.pack(anchor='w', padx=(10, 0), pady=(10, 0))
+frame_info = tk.Frame(janela)
+frame_info.pack(anchor='w', padx=(10, 0), pady=(5, 0))
 
-label_mac = tk.Label(janela, text="MAC: 23:45:67:89:01:1", font=small_font)
-label_mac.pack(anchor='w', padx=(10, 0), pady=(5, 0))
+label_img = tk.Label(frame_info, image=img_esquerda)
+label_img.grid(row=0, column=0, rowspan=3, padx=(0, 5), pady=(5, 0), sticky="n")
 
-label_descricao = tk.Label(janela, text="Descrição: teste 02", font=small_font)
-label_descricao.pack(anchor='w', padx=(10, 0), pady=(5, 0))
+label_codigo = tk.Label(frame_info, text="Código: 002", font=small_font)
+label_codigo.grid(row=0, column=1, sticky="w")
+
+label_mac = tk.Label(frame_info, text="MAC: 23:45:67:89:01:1", font=small_font)
+label_mac.grid(row=1, column=1, sticky="w")
+
+label_descricao = tk.Label(frame_info, text="Descrição: teste 02", font=small_font)
+label_descricao.grid(row=2, column=1, sticky="w")
 
 frame_botoes = tk.Frame(janela)
 frame_botoes.pack(side='top', anchor='e', pady=(10, 0))
@@ -54,5 +64,10 @@ label_custo_mes_atual.pack(anchor='w', padx=(10, 0), pady=(5, 0))
 
 label_custo_mes_anterior = tk.Label(janela, text="Custo do mês anterior:        R$0.0", font=small_font)
 label_custo_mes_anterior.pack(anchor='w', padx=(10, 0), pady=(5, 0))
+
+text_box = tk.Text(janela, height=1, width=8, font=("Arial", 10))
+text_box.place(relx=0.5, rely=0.74, anchor='center')
+
+text_box.config(state='disabled')
 
 janela.mainloop()
