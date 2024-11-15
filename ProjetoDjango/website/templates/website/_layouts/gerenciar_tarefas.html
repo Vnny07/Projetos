@@ -1,0 +1,215 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilo da barra de navegação */
+        a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        header {
+            background-color: #007BFF;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        header span {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        /* Título "Tarefas" */
+        .tasks-title {
+            text-align: left;
+            font-size: 28px;
+            margin-top: 20px;
+            font-weight: bold;
+            margin-left: 20px;
+            }
+
+        /* Layout das colunas de tarefas */
+        .tasks-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .task-column {
+            width: 30%;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .task-column h3 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .task-box {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .task-box label {
+            font-weight: bold;
+        }
+
+        .task-box select,
+        .task-box button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .task-box button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .task-box button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegação com conteúdo centralizado -->
+    <header>
+        <span>Gerenciamento de Tarefas</span>
+        <a href="{% url 'cadastro_usuarios' %}">Cadastro de Usuários</a>
+        <a href="{% url 'cadastro_tarefas' %}">Cadastro de Tarefas</a>
+        <a href="{% url 'gerenciar_tarefas' %}">Gerenciar Tarefas</a>
+    </header>
+
+    <!-- Título de "Tarefas" -->
+    <div class="tasks-title">
+        Tarefas
+    </div>
+
+    <!-- Container das colunas de tarefas -->
+    <div class="tasks-container">
+        <!-- Coluna A Fazer -->
+        <div class="task-column">
+            <h3>A Fazer</h3>
+
+            <!-- Caixa de tarefa -->
+            <div class="task-box">
+                <label for="descricao">Descrição:</label>
+                <p>Descrição da tarefa</p>
+
+                <label for="setor">Setor:</label>
+                <p>Setor da tarefa</p>
+
+                <label for="prioridade">Prioridade:</label>
+                <p>Alta</p>
+
+                <label for="vinculado">Vinculado a:</label>
+                <p>Usuário 1</p>
+
+                <label for="status">Alterar Status:</label>
+                <select id="status" name="status">
+                    <option value="a_fazer">A Fazer</option>
+                    <option value="fazendo">Fazendo</option>
+                    <option value="pronto">Pronto</option>
+                </select>
+
+                <button>Alterar Status</button>
+                <button>Editar</button>
+                <button>Excluir</button>
+            </div>
+        </div>
+
+        <!-- Coluna Fazendo -->
+        <div class="task-column">
+            <h3>Fazendo</h3>
+
+            <!-- Caixa de tarefa -->
+            <div class="task-box">
+                <label for="descricao">Descrição:</label>
+                <p>Descrição da tarefa</p>
+
+                <label for="setor">Setor:</label>
+                <p>Setor da tarefa</p>
+
+                <label for="prioridade">Prioridade:</label>
+                <p>Alta</p>
+
+                <label for="vinculado">Vinculado a:</label>
+                <p>Usuário 2</p>
+
+                <label for="status">Alterar Status:</label>
+                <select id="status" name="status">
+                    <option value="a_fazer">A Fazer</option>
+                    <option value="fazendo">Fazendo</option>
+                    <option value="pronto">Pronto</option>
+                </select>
+
+                <button>Alterar Status</button>
+                <button>Editar</button>
+                <button>Excluir</button>
+            </div>
+        </div>
+
+        <!-- Coluna Pronto -->
+        <div class="task-column">
+            <h3>Pronto</h3>
+
+            <!-- Caixa de tarefa -->
+            <div class="task-box">
+                <label for="descricao">Descrição:</label>
+                <p>Descrição da tarefa</p>
+
+                <label for="setor">Setor:</label>
+                <p>Setor da tarefa</p>
+
+                <label for="prioridade">Prioridade:</label>
+                <p>Alta</p>
+
+                <label for="vinculado">Vinculado a:</label>
+                <p>Usuário 3</p>
+
+                <label for="status">Alterar Status:</label>
+                <select id="status" name="status">
+                    <option value="a_fazer">A Fazer</option>
+                    <option value="fazendo">Fazendo</option>
+                    <option value="pronto">Pronto</option>
+                </select>
+
+                <button>Alterar Status</button>
+                <button>Editar</button>
+                <button>Excluir</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

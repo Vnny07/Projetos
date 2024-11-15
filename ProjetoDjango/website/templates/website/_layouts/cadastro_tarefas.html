@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilo da barra de navegação */
+        a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        header {
+            background-color: #007BFF;
+            padding: 10px;
+            display: flex; /* Usa flexbox */
+            justify-content: center; /* Centraliza os itens */
+            align-items: center; /* Alinha os itens verticalmente */
+            width: 100%; /* Garante que a barra ocupe toda a largura da página */
+        }
+
+        header span {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        /* Estilo para o conteúdo da página */
+        .content {
+            margin: 20px;
+            padding-left: 20px; /* Adiciona um padding à esquerda */
+        }
+
+        /* Formulário alinhado à esquerda */
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px; /* Ajusta a largura do formulário */
+            margin-left: 0; /* Alinha o formulário à esquerda */
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Estilo uniforme para as caixas de texto, select e textarea */
+        .form-container input,
+        .form-container select,
+        .form-container textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que o padding não afetará a largura total */
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegação com conteúdo centralizado -->
+    <header>
+        <span>Gerenciamento de Tarefas</span>
+        <a href="{% url 'cadastro_usuarios' %}">Cadastro de Usuários</a>
+        <a href="{% url 'cadastro_tarefas' %}">Cadastro de Tarefas</a>
+        <a href="{% url 'gerenciar_tarefas' %}">Gerenciar Tarefas</a>
+    </header>
+
+    <div class="content">
+        <!-- Formulário de cadastro de tarefas alinhado à esquerda -->
+        <div class="form-container">
+            <form>
+                <!-- Descrição -->
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" rows="2" placeholder="Digite a descrição"></textarea>
+
+                <!-- Setor -->
+                <label for="setor">Setor:</label>
+                <textarea id="setor" name="setor" rows="2" placeholder="Digite o setor"></textarea>
+
+                <!-- Usuário -->
+                <label for="usuario">Usuário:</label>
+                <select id="usuario" name="usuario">
+                </select>
+
+                <!-- Prioridade -->
+                <label for="prioridade">Prioridade:</label>
+                <select id="prioridade" name="prioridade">
+                    <option value="baixa">Baixa</option>
+                    <option value="media">Média</option>
+                    <option value="alta">Alta</option>
+                </select>
+
+                <!-- Botão de Cadastro -->
+                <button type="submit">Cadastrar Tarefa</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
