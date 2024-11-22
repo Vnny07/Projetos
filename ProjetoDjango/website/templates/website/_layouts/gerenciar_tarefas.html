@@ -53,7 +53,7 @@
         }
 
         .task-column {
-            width: 30%;
+            width: 20%; /* Reduzindo de 30% para 20% */
             background-color: #f8f9fa;
             padding: 10px;
             border-radius: 8px;
@@ -66,11 +66,8 @@
         }
 
         .task-box {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            max-height: 150px; /* Define altura máxima */
+            overflow-y: auto; /* Adiciona rolagem se necessário */
         }
 
         .task-box label {

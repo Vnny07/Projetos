@@ -98,29 +98,33 @@
     <div class="content">
         <!-- Formulário de cadastro de tarefas alinhado à esquerda -->
         <div class="form-container">
-            <form>
-                <!-- Descrição -->
+            <form method="POST" action="{% url 'cadastro_tarefas' %}">
+                {% csrf_token %}
+
+                <!-- Descrição da tarefa -->
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" rows="2" placeholder="Digite a descrição"></textarea>
+                <input type="text" id="descricao" name="descricao" placeholder="Digite a descrição da tarefa">
 
                 <!-- Setor -->
                 <label for="setor">Setor:</label>
-                <textarea id="setor" name="setor" rows="2" placeholder="Digite o setor"></textarea>
-
-                <!-- Usuário -->
-                <label for="usuario">Usuário:</label>
-                <select id="usuario" name="usuario">
-                </select>
+                <input type="text" id="setor" name="setor" placeholder="Digite o setor da tarefa">
 
                 <!-- Prioridade -->
                 <label for="prioridade">Prioridade:</label>
                 <select id="prioridade" name="prioridade">
-                    <option value="baixa">Baixa</option>
-                    <option value="media">Média</option>
-                    <option value="alta">Alta</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Média">Média</option>
+                    <option value="Baixa">Baixa</option>
+                 </select>
+
+                <!-- Combobox de Usuário -->
+                <label for="usuario">Usuário:</label>
+                <select id="usuario" name="usuario">
+                    {% for usuario in usuarios %}
+                    <option value="{{ usuario.id }}">{{ usuario.usu_nome }}</option>
+                    {% endfor %}
                 </select>
 
-                <!-- Botão de Cadastro -->
                 <button type="submit">Cadastrar Tarefa</button>
             </form>
         </div>

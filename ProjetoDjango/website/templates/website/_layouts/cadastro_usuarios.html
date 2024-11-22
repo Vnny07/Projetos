@@ -94,7 +94,8 @@
     <div class="content">
         <!-- Formulário de cadastro de usuários alinhado à esquerda -->
         <div class="form-container">
-            <form>
+            <form method="POST" action="{% url 'cadastro_usuarios' %}">
+                {% csrf_token %}
                 <!-- Nome -->
                 <label for="nome">Nome:</label>
                 <input type="text" id="nome" name="nome" placeholder="Digite o nome">
