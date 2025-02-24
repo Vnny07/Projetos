@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Estoque</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .title {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .navbar .links {
+            display: flex;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .livros-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .livro-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .livro-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .estoque {
+            font-size: 14px;
+            color: #555;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn.entrada {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn.saida {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn.entrada:hover {
+            background-color: #218838;
+        }
+        .btn.saida:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <span class="title">Gerenciador de Estoque</span>
+        <div class="links">
+            <a href="{{ url_for('cadastro_autor') }}">Cadastrar Autor</a>
+            <a href="{{ url_for('cadastro_livro') }}">Cadastrar Livro</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Controle de Estoque</h2>
+        <div class="livros-container">
+            {% for livro in livros %}
+            <div class="livro-card">
+                <div class="livro-info">{{ livro.titulo }} ({{ livro.ano_publicacao }})</div>
+                <div class="estoque">Estoque: {{ livro.quantidade }}</div>
+                <div class="buttons">
+                    <button class="btn entrada">Entrada</button>
+                    <button class="btn saida">Saída</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
