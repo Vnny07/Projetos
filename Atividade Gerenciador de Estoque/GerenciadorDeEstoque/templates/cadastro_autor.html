@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Autor</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+        }
+        .navbar {
+            background-color: blue;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            text-align: left;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>Gerenciador de Estoque</div>
+        <div>
+            <a href="{{ url_for('cadastro_livro') }}">Cadastrar Livro</a>
+            <a href="{{ url_for('controle_estoque') }}">Gerenciar Estoque</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Cadastro de Autor</h2>
+        <form id="cadastroForm" action="/cadastrar_autor" method="post">
+            <label for="nome">Nome Completo:</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="nacionalidade">Nacionalidade:</label>
+            <input type="text" id="nacionalidade" name="nacionalidade" required>
+
+            <label for="biografia">Biografia:</label>
+            <textarea id="biografia" name="biografia" rows="4" required></textarea>
+
+            <button type="submit">Registrar</button>
+        </form>
+        <div id="mensagem" class="success-message">Autor cadastrado com sucesso!</div>
+    </div>
+
+    <script>
+        document.getElementById("cadastroForm").addEventListener("submit", function() {
+            setTimeout(() => {
+                document.getElementById("mensagem").style.display = "block";
+            }, 500);
+        });
+    </script>
+</body>
+</html>

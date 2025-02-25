@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+        }
+        .navbar {
+            background-color: blue;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: lightgray;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        .add-button {
+            padding: 10px 15px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .add-button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+    <script>
+        function excluirLivro(id) {
+            if (confirm("Tem certeza que deseja excluir este livro?")) {
+                fetch(`/excluir_livro/${id}`, { method: "DELETE" })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.mensagem);
+                        location.reload();
+                    })
+                    .catch(error => console.error("Erro ao excluir livro:", error));
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar">
+        <div>Gerenciador de Estoque</div>
+        <div>
+            <a href="{{ url_for('cadastro_autor') }}">Cadastrar Autor</a>
+            <a href="{{ url_for('cadastro_livro') }}">Cadastrar Livro</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>ISBN</th>
+                    <th>Edição</th>
+                    <th>Editora</th>
+                    <th>Ano</th>
+                    <th>Preço</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                <tr>
+                    <td>{{ livro.liv_id }}</td>
+                <td>{{ livro.liv_titulo }}</td>
+                <td>
+                    {% for livro_autor in livro.autores %}
+                        {{ livro_autor.autor.aut_nome }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ livro.liv_isbn }}</td>
+                <td>{{ livro.liv_edicao }}</td>
+                <td>{{ livro.liv_editora }}</td>
+                <td>{{ livro.liv_ano_publicacao }}</td>
+                <td>R$ {{ "%.2f"|format(livro.liv_preco_capa) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
