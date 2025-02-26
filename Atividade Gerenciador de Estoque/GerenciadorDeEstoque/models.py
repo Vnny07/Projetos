@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
@@ -32,6 +33,6 @@ class Estoque(db.Model):
     __tablename__ = 'tbl_estoque'
     est_id = db.Column(db.Integer, primary_key=True)
     est_quantidade = db.Column(db.Integer, nullable=False)
-    est_data_entrada = db.Column(db.Date)
+    est_data_entrada = db.Column(db.Date, default=func.current_date())
     est_data_saida = db.Column(db.Date, nullable=True)
     tbl_livro_liv_id = db.Column(db.Integer, db.ForeignKey('tbl_livro.liv_id'), nullable=False)

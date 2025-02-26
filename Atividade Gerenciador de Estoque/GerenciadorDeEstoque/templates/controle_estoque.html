@@ -31,6 +31,15 @@
             margin: 50px auto;
             text-align: center;
         }
+        .add-livro-btn {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -44,43 +53,25 @@
         th {
             background-color: lightgray;
         }
-        button {
-            padding: 8px 12px;
-            background-color: red;
-            color: white;
+        .estoque-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .estoque-actions button {
+            padding: 5px 10px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
         }
-        button:hover {
-            background-color: darkred;
-        }
-        .add-button {
-            padding: 10px 15px;
+        .add-btn {
             background-color: green;
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 15px;
         }
-        .add-button:hover {
-            background-color: darkgreen;
+        .del-btn {
+            background-color: red;
+            color: white;
         }
     </style>
-    <script>
-        function excluirLivro(id) {
-            if (confirm("Tem certeza que deseja excluir este livro?")) {
-                fetch(`/excluir_livro/${id}`, { method: "DELETE" })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.mensagem);
-                        location.reload();
-                    })
-                    .catch(error => console.error("Erro ao excluir livro:", error));
-            }
-        }
-    </script>
 </head>
 <body>
     <div class="navbar">
@@ -92,6 +83,7 @@
     </div>
 
     <div class="container">
+        <button class="add-livro-btn" onclick="window.location.href='{{ url_for('cadastro_livro') }}'">Adicionar Livro</button>
         <table>
             <thead>
                 <tr>
@@ -103,23 +95,38 @@
                     <th>Editora</th>
                     <th>Ano</th>
                     <th>Preço</th>
+                    <th>Quantidade</th>
+                    <th>Opções</th>
                 </tr>
             </thead>
             <tbody>
                 {% for livro in livros %}
                 <tr>
                     <td>{{ livro.liv_id }}</td>
-                <td>{{ livro.liv_titulo }}</td>
-                <td>
-                    {% for livro_autor in livro.autores %}
-                        {{ livro_autor.autor.aut_nome }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </td>
-                <td>{{ livro.liv_isbn }}</td>
-                <td>{{ livro.liv_edicao }}</td>
-                <td>{{ livro.liv_editora }}</td>
-                <td>{{ livro.liv_ano_publicacao }}</td>
-                <td>R$ {{ "%.2f"|format(livro.liv_preco_capa) }}</td>
+                    <td>{{ livro.liv_titulo }}</td>
+                    <td>
+                        {% for livro_autor in livro.autores %}
+                            {{ livro_autor.autor.aut_nome }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ livro.liv_isbn }}</td>
+                    <td>{{ livro.liv_edicao }}</td>
+                    <td>{{ livro.liv_editora }}</td>
+                    <td>{{ livro.liv_ano_publicacao }}</td>
+                    <td>R$ {{ "%.2f"|format(livro.liv_preco_capa) }}</td>
+                    <td>
+                        {% if livro.estoque %}
+                            {{ livro.estoque[0].est_quantidade }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="estoque-actions">
+                            <button class="add-btn" onclick="window.location.href='{{ url_for('controle_entrada') }}'">Adicionar</button>
+                            <button class="del-btn" onclick="window.location.href='{{ url_for('controle_saida') }}'">Excluir</button>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Saída</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+        }
+        .navbar {
+            background-color: blue;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            text-align: center;
+        }
+        label, input {
+            display: block;
+            margin: 10px auto;
+            font-size: 18px;
+        }
+        input {
+            padding: 8px;
+            width: 200px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+        .back-btn {
+            background-color: gray;
+            color: white;
+        }
+        .register-btn {
+            background-color: green;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>Gerenciador de Estoque</div>
+        <div>
+            <a href="{{ url_for('cadastro_autor') }}">Cadastrar Autor</a>
+            <a href="{{ url_for('cadastro_livro') }}">Cadastrar Livro</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" name="quantidade" min="1">
+
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data">
+
+        <div class="buttons">
+            <button class="back-btn" onclick="window.history.back()">Voltar</button>
+            <button class="register-btn">Registrar</button>
+        </div>
+    </div>
+</body>
+</html>

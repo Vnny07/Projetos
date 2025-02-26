@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from models import db, Autor, Livro, LivroAutor
+from models import db, Autor, Livro, LivroAutor, Estoque
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
@@ -11,22 +11,26 @@ with app.app_context():
     db.create_all()
     print("Banco de dados criado com sucesso!")
 
+@app.route('/controle_entrada')
+def controle_entrada():
+    return render_template('controle_entrada.html')
+
+@app.route('/controle_saida')
+def controle_saida():
+    return render_template('controle_saida.html')
 
 @app.route('/cadastro_autor')
 def cadastro_autor():
     return render_template('cadastro_autor.html')
 
-
 @app.route('/cadastro_livro')
 def cadastro_livro():
     return render_template('cadastro_livro.html')
 
-
 @app.route('/controle_estoque')
 def controle_estoque():
-    livros = Livro.query.all()  # Pegando todos os livros do banco
+    livros = Livro.query.all()
     return render_template('controle_estoque.html', livros=livros)
-
 
 @app.route('/excluir_livro/<int:livro_id>', methods=['POST'])
 def excluir_livro(livro_id):
@@ -36,7 +40,6 @@ def excluir_livro(livro_id):
         db.session.commit()
         return jsonify({"mensagem": "Livro excluído com sucesso!"})
     return jsonify({"erro": "Livro não encontrado!"}), 404
-
 
 @app.route('/cadastrar_autor', methods=['POST'])
 def cadastrar_autor():
@@ -57,13 +60,11 @@ def cadastrar_autor():
 
     return redirect(url_for('cadastro_autor'))
 
-
 @app.route('/listar_autores')
 def listar_autores():
     autores = Autor.query.all()
     autores_json = [{"id": autor.aut_id, "nome": autor.aut_nome} for autor in autores]
     return jsonify(autores_json)
-
 
 @app.route('/cadastrar_livro', methods=['POST'])
 def cadastrar_livro():
@@ -98,8 +99,11 @@ def cadastrar_livro():
     db.session.add(livro_autor)
     db.session.commit()
 
-    return jsonify({"mensagem": "Livro cadastrado com sucesso!"})
+    novo_estoque = Estoque(tbl_livro_liv_id=novo_livro.liv_id, est_quantidade=1)
+    db.session.add(novo_estoque)
+    db.session.commit()
 
+    return jsonify({"mensagem": "Livro cadastrado com sucesso!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
