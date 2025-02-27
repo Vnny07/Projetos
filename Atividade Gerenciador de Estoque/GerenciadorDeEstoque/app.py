@@ -11,13 +11,15 @@ with app.app_context():
     db.create_all()
     print("Banco de dados criado com sucesso!")
 
-@app.route('/controle_entrada')
-def controle_entrada():
-    return render_template('controle_entrada.html')
-
 @app.route('/controle_saida')
 def controle_saida():
-    return render_template('controle_saida.html')
+    livros = Livro.query.all()
+    return render_template('controle_saida.html', livros=livros)
+
+@app.route('/controle_entrada')
+def controle_entrada():
+    livros = Livro.query.all()
+    return render_template('controle_entrada.html', livros=livros)
 
 @app.route('/cadastro_autor')
 def cadastro_autor():

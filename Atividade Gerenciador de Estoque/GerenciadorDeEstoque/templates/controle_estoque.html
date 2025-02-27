@@ -31,15 +31,6 @@
             margin: 50px auto;
             text-align: center;
         }
-        .add-livro-btn {
-            background-color: blue;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -55,13 +46,19 @@
         }
         .estoque-actions {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .estoque-actions .left, .estoque-actions .right {
+            display: flex;
+            gap: 10px;
         }
         .estoque-actions button {
-            padding: 5px 10px;
+            padding: 10px 15px;
             border: none;
             cursor: pointer;
+            font-size: 16px;
         }
         .add-btn {
             background-color: green;
@@ -69,6 +66,10 @@
         }
         .del-btn {
             background-color: red;
+            color: white;
+        }
+        .add-livro-btn {
+            background-color: blue;
             color: white;
         }
     </style>
@@ -83,7 +84,16 @@
     </div>
 
     <div class="container">
-        <button class="add-livro-btn" onclick="window.location.href='{{ url_for('cadastro_livro') }}'">Adicionar Livro</button>
+        <div class="estoque-actions">
+            <div class="left">
+                <button class="add-livro-btn" onclick="window.location.href='{{ url_for('cadastro_livro') }}'">Adicionar Livro</button>
+            </div>
+            <div class="right">
+                <button class="add-btn" onclick="window.location.href='{{ url_for('controle_entrada') }}'">Adicionar Quantidade</button>
+                <button class="del-btn" onclick="window.location.href='{{ url_for('controle_saida') }}'">Excluir Quantidade</button>
+            </div>
+        </div>
+
         <table>
             <thead>
                 <tr>
@@ -96,7 +106,6 @@
                     <th>Ano</th>
                     <th>Preço</th>
                     <th>Quantidade</th>
-                    <th>Opções</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,12 +129,6 @@
                         {% else %}
                             0
                         {% endif %}
-                    </td>
-                    <td>
-                        <div class="estoque-actions">
-                            <button class="add-btn" onclick="window.location.href='{{ url_for('controle_entrada') }}'">Adicionar</button>
-                            <button class="del-btn" onclick="window.location.href='{{ url_for('controle_saida') }}'">Excluir</button>
-                        </div>
                     </td>
                 </tr>
                 {% endfor %}

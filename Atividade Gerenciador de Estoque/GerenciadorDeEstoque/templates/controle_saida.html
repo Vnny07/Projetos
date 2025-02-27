@@ -31,12 +31,12 @@
             margin: 50px auto;
             text-align: center;
         }
-        label, input {
+        label, input, select {
             display: block;
             margin: 10px auto;
             font-size: 18px;
         }
-        input {
+        input, select {
             padding: 8px;
             width: 200px;
         }
@@ -54,7 +54,7 @@
             color: white;
         }
         .register-btn {
-            background-color: green;
+            background-color: red;
             color: white;
             margin-left: 10px;
         }
@@ -70,6 +70,15 @@
     </div>
 
     <div class="container">
+        <div class="input-group">
+            <label for="livro">Livro:</label>
+            <select id="livro" name="livro">
+                {% for livro in livros %}
+                    <option value="{{ livro.liv_id }}">{{ livro.liv_titulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <label for="quantidade">Quantidade:</label>
         <input type="number" id="quantidade" name="quantidade" min="1">
 
@@ -78,7 +87,7 @@
 
         <div class="buttons">
             <button class="back-btn" onclick="window.history.back()">Voltar</button>
-            <button class="register-btn">Registrar</button>
+            <button class="register-btn">Excluir</button>
         </div>
     </div>
 </body>
