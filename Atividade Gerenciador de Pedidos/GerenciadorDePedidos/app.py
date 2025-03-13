@@ -31,6 +31,22 @@ def novo_cliente():
 def editar_cliente():
     return render_template("editar_cliente.html")
 
+@app.route("/editar_produto")
+def editar_produto():
+    return render_template("editar_produto.html")
+
+@app.route("/novo_produto")
+def novo_produto():
+    return render_template("novo_produto.html")
+
+@app.route("/editar_pedido")
+def editar_pedido():
+    return render_template("editar_pedido.html")
+
+@app.route("/novo_pedido")
+def novo_pedido():
+    return render_template("novo_pedido.html")
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

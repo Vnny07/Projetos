@@ -25,11 +25,26 @@
         .container {
             margin-top: 20px;
         }
+        .btn-voltar {
+            font-size: 20px;
+            padding: 12px 25px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            background-color: #002f6c;
+        }
+        .btn-voltar:hover {
+            background-color: #4c89c6;
+        }
     </style>
 </head>
 <body>
     <div class="header">Editar Cliente</div>
     <div class="container">
+        <button class="btn-voltar" onclick="window.history.back()">Voltar</button>
     </div>
 </body>
 </html>
