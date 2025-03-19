@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Alunos</h1>
+    <p>Veja a lista de alunos cadastrados e gerencie suas informações.</p>
+    <button onclick="window.history.back()">Voltar</button>
+    <a href="{{ url_for('cadastrar_aluno') }}" class="btn">Cadastrar Aluno</a>
+</body>
+</html>

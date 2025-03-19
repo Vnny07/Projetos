@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        input {
+            padding: 8px;
+            width: 50%;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .curso-item {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px auto;
+            width: 60%;
+            border-radius: 5px;
+            text-align: left;
+        }
+        .curso-item h3 {
+            margin: 0;
+            color: #007BFF;
+        }
+        .curso-item p {
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-excluir {
+            background-color: #dc3545;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .btn-excluir:hover {
+            background-color: #c82333;
+        }
+        .container-botoes {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cursos</h1>
+    <p>Pesquise pelo nome do curso ou pelo instrutor.</p>
+
+    <input type="text" id="pesquisa" placeholder="Digite o nome do curso ou instrutor..." onkeyup="filtrarCursos()">
+
+    <div class="container-botoes">
+        <button onclick="window.history.back()" class="btn">Voltar</button>
+        <a href="{{ url_for('cadastrar_curso') }}" class="btn">Cadastrar Curso</a>
+    </div>
+
+    <div id="cursos-container">
+        {% for curso in cursos %}
+        <div class="curso-item">
+            <h3>{{ curso.nome }}</h3>
+            <p><strong>Instrutor:</strong> {{ curso.instrutor }}</p>
+            <p><strong>Carga Horária:</strong> {{ curso.carga_horaria }} horas</p>
+            <p><strong>Descrição:</strong> {{ curso.descricao }}</p>
+            <a href="{{ url_for('editar_curso', id=curso.id) }}" class="btn">Editar</a>
+            <button class="btn-excluir" onclick="confirmarExclusao({{ curso.id }})">Excluir</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function filtrarCursos() {
+            let input = document.getElementById('pesquisa').value.toLowerCase();
+            let cursos = document.getElementsByClassName('curso-item');
+
+            for (let curso of cursos) {
+                let nome = curso.getElementsByTagName('h3')[0].innerText.toLowerCase();
+                let instrutor = curso.getElementsByTagName('p')[0].innerText.toLowerCase();
+
+                if (nome.includes(input) || instrutor.includes(input)) {
+                    curso.style.display = "block";
+                } else {
+                    curso.style.display = "none";
+                }
+            }
+        }
+
+        function confirmarExclusao(id) {
+            if (confirm("Tem certeza que deseja excluir este curso?")) {
+                window.location.href = "{{ url_for('excluir_curso', id=0) }}".replace('0', id);
+            }
+        }
+    </script>
+</body>
+</html>
