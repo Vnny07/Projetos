@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        input {
+            padding: 8px;
+            width: 50%;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .aluno-item {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px auto;
+            width: 60%;
+            border-radius: 5px;
+            text-align: left;
+        }
+        .aluno-item h3 {
+            margin: 0;
+            color: #007BFF;
+        }
+        .aluno-item p {
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-excluir {
+            background-color: #dc3545;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .btn-excluir:hover {
+            background-color: #c82333;
+        }
+        .container-botoes {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alunos</h1>
+    <p>Pesquise pelo nome do aluno ou pelo email.</p>
+
+    <input type="text" id="pesquisa" placeholder="Digite o nome ou email do aluno..." onkeyup="filtrarAlunos()">
+
+    <div class="container-botoes">
+        <button onclick="window.history.back()" class="btn">Voltar</button>
+        <a href="{{ url_for('cadastrar_aluno') }}" class="btn">Cadastrar Aluno</a>
+    </div>
+
+    <div id="alunos-container">
+        {% for aluno in alunos %}
+        <div class="aluno-item">
+            <h3>{{ aluno.nome }}</h3>
+            <p><strong>Email:</strong> {{ aluno.email }}</p>
+            <p><strong>Telefone:</strong> {{ aluno.telefone }}</p>
+            <a href="{{ url_for('editar_aluno', id=aluno.id) }}" class="btn">Editar</a>
+            <button class="btn-excluir" onclick="confirmarExclusao({{ aluno.id }})">Excluir</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function filtrarAlunos() {
+            let input = document.getElementById('pesquisa').value.toLowerCase();
+            let alunos = document.getElementsByClassName('aluno-item');
+
+            for (let aluno of alunos) {
+                let nome = aluno.getElementsByTagName('h3')[0].innerText.toLowerCase();
+                let email = aluno.getElementsByTagName('p')[0].innerText.toLowerCase();
+
+                if (nome.includes(input) || email.includes(input)) {
+                    aluno.style.display = "block";
+                } else {
+                    aluno.style.display = "none";
+                }
+            }
+        }
+
+        function confirmarExclusao(id) {
+            if (confirm("Tem certeza que deseja excluir este aluno?")) {
+                window.location.href = "{{ url_for('excluir_aluno', id=0) }}".replace('0', id);
+            }
+        }
+    </script>
+</body>
+</html>
