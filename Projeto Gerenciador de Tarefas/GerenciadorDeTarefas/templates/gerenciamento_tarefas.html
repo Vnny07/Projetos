@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Tarefas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Barra de navegação -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h1>Gerenciador de Tarefas</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="/cadastro_usuario">Cadastrar Usuário</a>
+            <a href="/cadastro_tarefa">Cadastrar Tarefa</a>
+            <a href="/">Gerenciar Tarefas</a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo do gerenciamento de tarefas -->
+    <div class="content">
+        <h2>Gerenciamento de Tarefas</h2>
+
+        <!-- Exibindo as tarefas divididas por status -->
+        <div class="kanban-container">
+            <div class="kanban-column">
+                <h3>A Fazer</h3>
+                <div class="task-box">
+                    {% for tarefa in tarefas_a_fazer %}
+                        <div class="task-item">
+                            <p><strong>Descrição:</strong> {{ tarefa.descricao }}</p>
+                            <p><strong>Setor:</strong> {{ tarefa.setor }}</p>
+                            <p><strong>Prioridade:</strong> {{ tarefa.prioridade }}</p>
+                            <form action="/atualizar_status/{{ tarefa.id }}" method="POST">
+                                <select name="status">
+                                    <option value="a fazer" {% if tarefa.status == 'a fazer' %}selected{% endif %}>A Fazer</option>
+                                    <option value="fazendo" {% if tarefa.status == 'fazendo' %}selected{% endif %}>Fazendo</option>
+                                    <option value="pronto" {% if tarefa.status == 'pronto' %}selected{% endif %}>Pronto</option>
+                                </select>
+                                <button type="submit">Atualizar</button>
+                            </form>
+                            <a href="/editar_tarefa/{{ tarefa.id }}">Editar</a>
+                            <form action="/excluir_tarefa/{{ tarefa.id }}" method="POST" style="display:inline;">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-column">
+                <h3>Fazendo</h3>
+                <div class="task-box">
+                    {% for tarefa in tarefas_fazendo %}
+                        <div class="task-item">
+                            <p><strong>Descrição:</strong> {{ tarefa.descricao }}</p>
+                            <p><strong>Setor:</strong> {{ tarefa.setor }}</p>
+                            <p><strong>Prioridade:</strong> {{ tarefa.prioridade }}</p>
+                            <form action="/atualizar_status/{{ tarefa.id }}" method="POST">
+                                <select name="status">
+                                    <option value="a fazer" {% if tarefa.status == 'a fazer' %}selected{% endif %}>A Fazer</option>
+                                    <option value="fazendo" {% if tarefa.status == 'fazendo' %}selected{% endif %}>Fazendo</option>
+                                    <option value="pronto" {% if tarefa.status == 'pronto' %}selected{% endif %}>Pronto</option>
+                                </select>
+                                <button type="submit">Atualizar</button>
+                            </form>
+                            <a href="/editar_tarefa/{{ tarefa.id }}">Editar</a>
+                            <form action="/excluir_tarefa/{{ tarefa.id }}" method="POST" style="display:inline;">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-column">
+                <h3>Pronto</h3>
+                <div class="task-box">
+                    {% for tarefa in tarefas_pronto %}
+                        <div class="task-item">
+                            <p><strong>Descrição:</strong> {{ tarefa.descricao }}</p>
+                            <p><strong>Setor:</strong> {{ tarefa.setor }}</p>
+                            <p><strong>Prioridade:</strong> {{ tarefa.prioridade }}</p>
+                            <form action="/atualizar_status/{{ tarefa.id }}" method="POST">
+                                <select name="status">
+                                    <option value="a fazer" {% if tarefa.status == 'a fazer' %}selected{% endif %}>A Fazer</option>
+                                    <option value="fazendo" {% if tarefa.status == 'fazendo' %}selected{% endif %}>Fazendo</option>
+                                    <option value="pronto" {% if tarefa.status == 'pronto' %}selected{% endif %}>Pronto</option>
+                                </select>
+                                <button type="submit">Atualizar</button>
+                            </form>
+                            <a href="/editar_tarefa/{{ tarefa.id }}">Editar</a>
+                            <form action="/excluir_tarefa/{{ tarefa.id }}" method="POST" style="display:inline;">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
