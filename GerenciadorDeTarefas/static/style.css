@@ -1,0 +1,113 @@
+/* Estilo da barra de navegação */
+.navbar {
+    background-color: #007bff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar-left h1 {
+    color: white;
+    margin: 0;
+}
+
+.navbar-right a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar-right a:hover {
+    text-decoration: underline;
+}
+
+/* Estilo do conteúdo */
+.content {
+    margin-top: 80px; /* Ajustado para não ficar em cima da barra */
+    padding: 20px;
+}
+
+/* Títulos da página */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Kanban Container */
+.kanban-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Kanban Column */
+.kanban-column {
+    flex: 1;
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column h3 {
+    font-size: 22px;
+    text-align: center;
+}
+
+/* Task Box */
+.task-box {
+    margin-top: 10px;
+}
+
+/* Task Item */
+.task-item {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-item p {
+    margin: 5px 0;
+}
+
+form {
+    margin-top: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+a {
+    text-decoration: none;
+    color: #3498db;
+    margin-left: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}

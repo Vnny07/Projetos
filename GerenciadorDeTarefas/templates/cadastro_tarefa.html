@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Tarefa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Barra de navegação -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h1>Gerenciador de Tarefas</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="/cadastro_usuario">Cadastrar Usuário</a>
+            <a href="/cadastro_tarefa">Cadastrar Tarefa</a>
+            <a href="/">Gerenciar Tarefas</a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo do cadastro de tarefa -->
+    <div class="content">
+        <h2>Cadastro de Tarefa</h2>
+
+        <!-- Formulário para cadastro -->
+        <form action="/cadastro_tarefa" method="POST">
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" required></textarea><br><br>
+
+            <label for="setor">Setor:</label>
+            <input type="text" id="setor" name="setor" required><br><br>
+
+            <label for="usuario">Usuário:</label>
+            <select id="usuario" name="usuario" required>
+                {% for usuario in usuarios %}
+                    <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <label for="prioridade">Prioridade:</label>
+            <select id="prioridade" name="prioridade" required>
+                <option value="baixa">Baixa</option>
+                <option value="média">Média</option>
+                <option value="alta">Alta</option>
+            </select><br><br>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        {% if mensagem %}
+            <p>{{ mensagem }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
