@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gerenciador de Docentes Extra-Quadro - Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Docentes Extra-Quadro</h1>
+        <h2>Login</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <div class="link-container">
+            <span class="link-text">Não tem uma conta?</span>
+            <a href="/cadastro" class="link">Cadastrar</a>
+        </div>
+        <div class="qrcode-container desktop-only">
+            <div class="qrcode-inner">
+                <div class="qrcode-text">
+                    <span class="qrcode-text-top">Acesse também</span>
+                    <span class="qrcode-text-bottom">pelo celular:</span>
+                </div>
+                <img src="/static/qrcode.png" alt="QR Code para acesso pelo celular" class="qrcode-image">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

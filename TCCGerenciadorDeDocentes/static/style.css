@@ -1,0 +1,356 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #00cc00;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3a3a3a;
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #00cc00;
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    line-height: normal;
+    box-sizing: border-box;
+}
+
+button:hover {
+    background-color: #00b300;
+    color: #000000;
+    font-weight: bold;
+}
+
+.link-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.link-text {
+    color: #ffffff;
+    margin-right: 5px;
+}
+
+.link {
+    color: #00cc00;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.logout-link {
+    color: #cc0000;
+    margin-top: 20px;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+}
+
+.qrcode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px auto;
+    padding: 15px;
+    background-color: #252525;
+    border: 1px solid #888;
+    border-radius: 5px;
+    max-width: 300px;
+}
+
+.qrcode-inner {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.qrcode-text {
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: bold;
+}
+
+.qrcode-text-top,
+.qrcode-text-bottom {
+    display: block;
+}
+
+.qrcode-image {
+    width: 100px;
+    height: 100px;
+}
+
+.flash {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.flash.success {
+    background-color: #00cc00;
+    color: #ffffff;
+}
+
+.flash.error {
+    background-color: #cc0000;
+    color: #ffffff;
+}
+
+.dashboard-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.record-button {
+    width: 135px;
+    padding: 10px;
+    background-color: #00cc00;
+    color: #000000;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: normal;
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+}
+
+.record-button:hover {
+    background-color: #00b300;
+    color: #000000;
+    font-weight: bold;
+}
+
+.logout-button {
+    background-color: #cc0000;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #b30000;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.modal-content p {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.registros {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #3a3a3a;
+    border-radius: 5px;
+}
+
+.registros-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.registro-card {
+    background-color: #4a4a4a;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.registro-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.registro-actions button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.registro-actions button.edit-button {
+    background-color: #00cc00;
+    color: #000000;
+    font-weight: bold;
+}
+
+.registro-actions button.edit-button:hover {
+    background-color: #00b300;
+    color: #000000;
+    font-weight: bold;
+}
+
+.registro-actions button.delete-button {
+    background-color: #cc0000;
+    color: #ffffff;
+}
+
+.registro-actions button.delete-button:hover {
+    background-color: #b30000;
+    color: #000000; /* Alterado de #ffffff para #000000 */
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm-button {
+    background-color: #cc0000;
+    color: #ffffff;
+    width: 48%;
+}
+
+.confirm-button:hover {
+    background-color: #b30000;
+}
+
+.cancel-button {
+    background-color: #00cc00;
+    color: #000000;
+    font-weight: bold;
+    width: 48%;
+}
+
+.cancel-button:hover {
+    background-color: #00b300;
+    color: #000000;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .desktop-only {
+        display: none;
+    }
+
+    .registros-scroll {
+        max-height: 300px;
+    }
+}

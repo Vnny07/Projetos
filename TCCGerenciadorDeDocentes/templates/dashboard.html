@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gerenciador de Docentes Extra-Quadro - Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Docentes Extra-Quadro</h1>
+        <h2>Dashboard</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="dashboard-buttons">
+            {% if tipo_usuario == 'admin' %}
+                <div class="button-group">
+                    <button onclick="openModal('docente')">Cadastrar Docente</button>
+                    <a href="/registros/docentes" class="record-button">Registros</a>
+                </div>
+                <div class="button-group">
+                    <button onclick="openModal('contrato')">Cadastrar Contrato</button>
+                    <a href="/registros/contratos" class="record-button">Registros</a>
+                </div>
+                <div class="button-group">
+                    <button onclick="openModal('turma')">Cadastrar Turma</button>
+                    <a href="/registros/turmas" class="record-button">Registros</a>
+                </div>
+                <div class="button-group">
+                    <button onclick="openModal('disciplina')">Cadastrar Disciplina</button>
+                    <a href="/registros/disciplinas" class="record-button">Registros</a>
+                </div>
+            {% elif tipo_usuario == 'coordenador' %}
+                <div class="button-group">
+                    <button onclick="openModal('alocacao')">Alocar Docente</button>
+                    <a href="/registros/alocacoes" class="record-button">Registros</a>
+                </div>
+                <div class="button-group">
+                    <button onclick="openModal('transferencia')">Transferir Docente</button>
+                    <a href="/registros/transferencias" class="record-button">Registros</a>
+                </div>
+            {% endif %}
+            <a class="link logout-link" onclick="openLogoutModal()">Sair</a>
+        </div>
+
+        <!-- Modals -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <div id="modal-form"></div>
+            </div>
+        </div>
+
+        <!-- Logout Confirmation Modal -->
+        <div id="logout-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeLogoutModal()">×</span>
+                <h3>Confirmar Logout</h3>
+                <p>Tem certeza que deseja sair?</p>
+                <div class="modal-actions">
+                    <button class="confirm-button" onclick="confirmLogout()">Sim</button>
+                    <button class="cancel-button" onclick="closeLogoutModal()">Não</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const modalForm = document.getElementById('modal-form');
+
+            let formHtml = '';
+            if (type === 'docente') {
+                formHtml = `
+                    <h3>Cadastrar Docente</h3>
+                    <form action="/cadastrar_docente" method="POST">
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail:</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="text" id="telefone" name="telefone">
+                        </div>
+                        <div class="form-group">
+                            <label for="cpf">CPF:</label>
+                            <input type="text" id="cpf" name="cpf">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <input type="text" id="status" name="status">
+                        </div>
+                        <div class="form-group">
+                            <label for="carga_horaria_max">Carga Horária Máx:</label>
+                            <input type="number" id="carga_horaria_max" name="carga_horaria_max" required>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            } else if (type === 'contrato') {
+                formHtml = `
+                    <h3>Cadastrar Contrato</h3>
+                    <form action="/cadastrar_contrato" method="POST">
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_inicio">Data Início:</label>
+                            <input type="date" id="data_inicio" name="data_inicio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_fim">Data Fim:</label>
+                            <input type="date" id="data_fim" name="data_fim">
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo_contrato">Tipo Contrato:</label>
+                            <input type="text" id="tipo_contrato" name="tipo_contrato" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor_hora">Valor Hora:</label>
+                            <input type="number" step="0.01" id="valor_hora" name="valor_hora" required>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            } else if (type === 'turma') {
+                formHtml = `
+                    <h3>Cadastrar Turma</h3>
+                    <form action="/cadastrar_turma" method="POST">
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="periodo">Período:</label>
+                            <input type="text" id="periodo" name="periodo" required>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            } else if (type === 'disciplina') {
+                formHtml = `
+                    <h3>Cadastrar Disciplina</h3>
+                    <form action="/cadastrar_disciplina" method="POST">
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            } else if (type === 'alocacao') {
+                formHtml = `
+                    <h3>Alocar Docente</h3>
+                    <form action="/alocar_docente" method="POST">
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="disciplina_id">Disciplina:</label>
+                            <select id="disciplina_id" name="disciplina_id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_id">Turma:</label>
+                            <select id="turma_id" name="turma_id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="horas_atribuidas">Horas Atribuídas:</label>
+                            <input type="number" id="horas_atribuidas" name="horas_atribuidas" required>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            } else if (type === 'transferencia') {
+                formHtml = `
+                    <h3>Transferir Docente</h3>
+                    <form action="/transferir_docente" method="POST">
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_origem">Turma Origem:</label>
+                            <select id="turma_origem" name="turma_origem" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_destino">Turma Destino:</label>
+                            <select id="turma_destino" name="turma_destino" required></select>
+                        </div>
+                        <button type="submit">Cadastrar</button>
+                    </form>`;
+            }
+
+            modalForm.innerHTML = formHtml;
+            modal.style.display = 'flex';
+
+            // Load select options
+            if (['contrato', 'alocacao', 'transferencia'].includes(type)) {
+                $.get('/get_docentes', function(data) {
+                    const select = document.getElementById('docente_id');
+                    select.innerHTML = data.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
+                });
+            }
+            if (type === 'alocacao') {
+                $.get('/get_disciplinas', function(data) {
+                    const select = document.getElementById('disciplina_id');
+                    select.innerHTML = data.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
+                });
+                $.get('/get_turmas', function(data) {
+                    const select = document.getElementById('turma_id');
+                    select.innerHTML = data.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
+                });
+            }
+            if (type === 'transferencia') {
+                $.get('/get_turmas', function(data) {
+                    const origem = document.getElementById('turma_origem');
+                    const destino = document.getElementById('turma_destino');
+                    const options = data.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
+                    origem.innerHTML = options;
+                    destino.innerHTML = options;
+                });
+            }
+        }
+
+        // Close modal
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            const logoutModal = document.getElementById('logout-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target == logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+        }
+
+        // Logout modal functions
+        function openLogoutModal() {
+            const logoutModal = document.getElementById('logout-modal');
+            logoutModal.style.display = 'flex';
+        }
+
+        function closeLogoutModal() {
+            const logoutModal = document.getElementById('logout-modal');
+            logoutModal.style.display = 'none';
+        }
+
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+    </script>
+</body>
+</html>

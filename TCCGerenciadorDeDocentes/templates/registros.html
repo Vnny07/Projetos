@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gerenciador de Docentes Extra-Quadro - Registros</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Docentes Extra-Quadro</h1>
+        <h2>Registros - {{ tipo.capitalize() }}</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="registros">
+            <div class="registros-scroll">
+                {% for registro in registros %}
+                    <div class="registro-card"
+                         data-id="{{ registro.id }}"
+                         data-tipo="{{ tipo }}"
+                         {% if tipo == 'docentes' %}
+                             data-nome="{{ registro.nome|safe }}"
+                             data-email="{{ registro.email|default('')|safe }}"
+                             data-telefone="{{ registro.telefone|default('')|safe }}"
+                             data-cpf="{{ registro.cpf|default('')|safe }}"
+                             data-status="{{ registro.status|default('')|safe }}"
+                             data-carga-horaria-max="{{ registro.carga_horaria_max|default('') }}"
+                         {% elif tipo == 'contratos' %}
+                             data-docente-id="{{ registro.docente_id|default('') }}"
+                             data-docente-nome="{{ registro.docente_nome|default('')|safe }}"
+                             data-data-inicio="{{ registro.data_inicio|default('') }}"
+                             data-data-fim="{{ registro.data_fim|default('') }}"
+                             data-tipo-contrato="{{ registro.tipo_contrato|default('')|safe }}"
+                             data-valor-hora="{{ registro.valor_hora|default('') }}"
+                         {% elif tipo == 'turmas' %}
+                             data-nome="{{ registro.nome|safe }}"
+                             data-periodo="{{ registro.periodo|safe }}"
+                         {% elif tipo == 'disciplinas' %}
+                             data-nome="{{ registro.nome|safe }}"
+                         {% elif tipo == 'alocacoes' %}
+                             data-docente-id="{{ registro.docente_id|default('') }}"
+                             data-docente-nome="{{ registro.docente_nome|default('')|safe }}"
+                             data-disciplina-id="{{ registro.disciplina_id|default('') }}"
+                             data-disciplina-nome="{{ registro.disciplina_nome|default('')|safe }}"
+                             data-turma-id="{{ registro.turma_id|default('') }}"
+                             data-turma-nome="{{ registro.turma_nome|default('')|safe }}"
+                             data-horas-atribuidas="{{ registro.horas_atribuidas|default('') }}"
+                         {% elif tipo == 'transferencias' %}
+                             data-docente-id="{{ registro.docente_id|default('') }}"
+                             data-docente-nome="{{ registro.docente_nome|default('')|safe }}"
+                             data-turma-origem="{{ registro.turma_origem|default('') }}"
+                             data-turma-origem-nome="{{ registro.turma_origem_nome|default('')|safe }}"
+                             data-turma-destino="{{ registro.turma_destino|default('') }}"
+                             data-turma-destino-nome="{{ registro.turma_destino_nome|default('')|safe }}"
+                             data-data-transferencia="{{ registro.data_transferencia|default('') }}"
+                         {% endif %}>
+                        {% if tipo == 'docentes' %}
+                            <p><strong>Nome:</strong> {{ registro.nome }}</p>
+                            <p><strong>E-mail:</strong> {{ registro.email or 'N/A' }}</p>
+                            <p><strong>Telefone:</strong> {{ registro.telefone or 'N/A' }}</p>
+                            <p><strong>Status:</strong> {{ registro.status or 'N/A' }}</p>
+                        {% elif tipo == 'contratos' %}
+                            <p><strong>Nome do Docente:</strong> {{ registro.docente_nome or 'N/A' }}</p>
+                            <p><strong>Data Início:</strong> {{ registro.data_inicio or 'N/A' }}</p>
+                            <p><strong>Data Fim:</strong> {{ registro.data_fim or 'N/A' }}</p>
+                            <p><strong>Tipo de Contrato:</strong> {{ registro.tipo_contrato or 'N/A' }}</p>
+                        {% elif tipo == 'turmas' %}
+                            <p><strong>Nome:</strong> {{ registro.nome }}</p>
+                            <p><strong>Período:</strong> {{ registro.periodo }}</p>
+                        {% elif tipo == 'disciplinas' %}
+                            <p><strong>Nome:</strong> {{ registro.nome }}</p>
+                        {% elif tipo == 'alocacoes' %}
+                            <p><strong>Nome do Docente:</strong> {{ registro.docente_nome or 'N/A' }}</p>
+                            <p><strong>Disciplina:</strong> {{ registro.disciplina_nome or 'N/A' }}</p>
+                            <p><strong>Turma:</strong> {{ registro.turma_nome or 'N/A' }}</p>
+                            <p><strong>Horas Atribuídas:</strong> {{ registro.horas_atribuidas }}</p>
+                        {% elif tipo == 'transferencias' %}
+                            <p><strong>Nome do Docente:</strong> {{ registro.docente_nome or 'N/A' }}</p>
+                            <p><strong>Turma Origem:</strong> {{ registro.turma_origem_nome or 'N/A' }}</p>
+                            <p><strong>Turma Destino:</strong> {{ registro.turma_destino_nome or 'N/A' }}</p>
+                            <p><strong>Data Transferência:</strong> {{ registro.data_transferencia or 'N/A' }}</p>
+                        {% endif %}
+                        <div class="registro-actions">
+                            <button class="edit-button" onclick="openEditModal(this)">Editar</button>
+                            <button class="delete-button" onclick="openDeleteModal('{{ tipo }}', '{{ registro.id }}')">Excluir</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="/dashboard" class="link">Voltar ao Dashboard</a>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">×</span>
+            <div id="edit-modal-form"></div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeleteModal()">×</span>
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este registro?</p>
+            <div class="modal-actions">
+                <button class="confirm-button" onclick="confirmDelete()">Sim</button>
+                <button class="cancel-button" onclick="closeDeleteModal()">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(button) {
+            const card = button.closest('.registro-card');
+            const tipo = card.dataset.tipo;
+            const id = card.dataset.id;
+            console.log('openEditModal chamado:', { tipo, id }); // Depuração
+
+            const modal = document.getElementById('edit-modal');
+            const modalForm = document.getElementById('edit-modal-form');
+
+            if (!modal || !modalForm) {
+                console.error('Elementos modal ou modal-form não encontrados.');
+                alert('Erro: Modal não encontrado.');
+                return;
+            }
+
+            // Função para escapar HTML e prevenir XSS
+            function escapeHtml(unsafe) {
+                if (unsafe === null || unsafe === undefined) return '';
+                return String(unsafe)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            try {
+                let formHtml = `<h3>Editar ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
+                    <form action="/editar_registro/${tipo}/${id}" method="POST">`;
+
+                if (tipo === 'docentes') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" value="${escapeHtml(card.dataset.nome)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail:</label>
+                            <input type="email" id="email" name="email" value="${escapeHtml(card.dataset.email)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="text" id="telefone" name="telefone" value="${escapeHtml(card.dataset.telefone)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="cpf">CPF:</label>
+                            <input type="text" id="cpf" name="cpf" value="${escapeHtml(card.dataset.cpf)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <input type="text" id="status" name="status" value="${escapeHtml(card.dataset.status)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="carga_horaria_max">Carga Horária Máx:</label>
+                            <input type="number" id="carga_horaria_max" name="carga_horaria_max" value="${card.dataset.cargaHorariaMax}" required min="0">
+                        </div>`;
+                } else if (tipo === 'contratos') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required>
+                                <option value="" disabled>Selecione um docente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_inicio">Data Início:</label>
+                            <input type="date" id="data_inicio" name="data_inicio" value="${card.dataset.dataInicio}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_fim">Data Fim:</label>
+                            <input type="date" id="data_fim" name="data_fim" value="${card.dataset.dataFim}">
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo_contrato">Tipo Contrato:</label>
+                            <input type="text" id="tipo_contrato" name="tipo_contrato" value="${escapeHtml(card.dataset.tipoContrato)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor_hora">Valor Hora:</label>
+                            <input type="number" step="0.01" id="valor_hora" name="valor_hora" value="${card.dataset.valorHora}" required min="0">
+                        </div>`;
+                } else if (tipo === 'turmas') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" value="${escapeHtml(card.dataset.nome)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="periodo">Período:</label>
+                            <input type="text" id="periodo" name="periodo" value="${escapeHtml(card.dataset.periodo)}" required>
+                        </div>`;
+                } else if (tipo === 'disciplinas') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" value="${escapeHtml(card.dataset.nome)}" required>
+                        </div>`;
+                } else if (tipo === 'alocacoes') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required>
+                                <option value="" disabled>Selecione um docente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="disciplina_id">Disciplina:</label>
+                            <select id="disciplina_id" name="disciplina_id" required>
+                                <option value="" disabled>Selecione uma disciplina</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_id">Turma:</label>
+                            <select id="turma_id" name="turma_id" required>
+                                <option value="" disabled>Selecione uma turma</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="horas_atribuidas">Horas Atribuídas:</label>
+                            <input type="number" id="horas_atribuidas" name="horas_atribuidas" value="${card.dataset.horasAtribuidas}" required min="0">
+                        </div>`;
+                } else if (tipo === 'transferencias') {
+                    formHtml += `
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required>
+                                <option value="" disabled>Selecione um docente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_origem">Turma Origem:</label>
+                            <select id="turma_origem" name="turma_origem" required>
+                                <option value="" disabled>Selecione uma turma</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma_destino">Turma Destino:</label>
+                            <select id="turma_destino" name="turma_destino" required>
+                                <option value="" disabled>Selecione uma turma</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_transferencia">Data Transferência:</label>
+                            <input type="date" id="data_transferencia" name="data_transferencia" value="${card.dataset.dataTransferencia}" required>
+                        </div>`;
+                } else {
+                    console.error('Tipo inválido:', tipo);
+                    alert('Erro: Tipo de registro inválido.');
+                    return;
+                }
+
+                formHtml += `<button type="submit">Salvar</button></form>`;
+                modalForm.innerHTML = formHtml;
+                modal.style.display = 'flex';
+
+                // Carregar opções para chaves estrangeiras
+                if (['contratos', 'alocacoes', 'transferencias'].includes(tipo)) {
+                    $.get('/get_docentes', function(data) {
+                        const select = document.getElementById('docente_id');
+                        if (select) {
+                            select.innerHTML = `<option value="" disabled>Selecione um docente</option>` +
+                                data.map(d => `<option value="${d.id}" ${d.id == card.dataset.docenteId ? 'selected' : ''}>${d.nome}</option>`).join('');
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao carregar docentes:', textStatus, errorThrown);
+                        alert('Erro ao carregar docentes.');
+                    });
+                }
+                if (tipo === 'alocacoes') {
+                    $.get('/get_disciplinas', function(data) {
+                        const select = document.getElementById('disciplina_id');
+                        if (select) {
+                            select.innerHTML = `<option value="" disabled>Selecione uma disciplina</option>` +
+                                data.map(d => `<option value="${d.id}" ${d.id == card.dataset.disciplinaId ? 'selected' : ''}>${d.nome}</option>`).join('');
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao carregar disciplinas:', textStatus, errorThrown);
+                        alert('Erro ao carregar disciplinas.');
+                    });
+                    $.get('/get_turmas', function(data) {
+                        const select = document.getElementById('turma_id');
+                        if (select) {
+                            select.innerHTML = `<option value="" disabled>Selecione uma turma</option>` +
+                                data.map(d => `<option value="${d.id}" ${d.id == card.dataset.turmaId ? 'selected' : ''}>${d.nome}</option>`).join('');
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao carregar turmas:', textStatus, errorThrown);
+                        alert('Erro ao carregar turmas.');
+                    });
+                }
+                if (tipo === 'transferencias') {
+                    $.get('/get_turmas', function(data) {
+                        const origem = document.getElementById('turma_origem');
+                        const destino = document.getElementById('turma_destino');
+                        if (origem && destino) {
+                            origem.innerHTML = `<option value="" disabled>Selecione uma turma</option>` +
+                                data.map(d => `<option value="${d.id}" ${d.id == card.dataset.turmaOrigem ? 'selected' : ''}>${d.nome}</option>`).join('');
+                            destino.innerHTML = `<option value="" disabled>Selecione uma turma</option>` +
+                                data.map(d => `<option value="${d.id}" ${d.id == card.dataset.turmaDestino ? 'selected' : ''}>${d.nome}</option>`).join('');
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao carregar turmas:', textStatus, errorThrown);
+                        alert('Erro ao carregar turmas.');
+                    });
+                }
+            } catch (error) {
+                console.error('Erro em openEditModal:', error);
+                alert('Erro ao abrir o modal de edição: ' + error.message);
+            }
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('edit-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        let deleteUrl = '';
+
+        function openDeleteModal(tipo, id) {
+            console.log('openDeleteModal chamado:', { tipo, id }); // Depuração
+            const modal = document.getElementById('delete-modal');
+            deleteUrl = `/excluir_registro/${tipo}/${id}`;
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                console.error('Modal de exclusão não encontrado.');
+                alert('Erro: Modal de exclusão não encontrado.');
+            }
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function confirmDelete() {
+            console.log('confirmDelete chamado, redirecionando para:', deleteUrl); // Depuração
+            window.location.href = deleteUrl;
+        }
+
+        // Fechar modals ao clicar fora
+        window.onclick = function(event) {
+            const editModal = document.getElementById('edit-modal');
+            const deleteModal = document.getElementById('delete-modal');
+            if (event.target === editModal) {
+                editModal.style.display = 'none';
+            }
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        };
+
+        // Verificar se jQuery carregou
+        $(document).ready(function() {
+            console.log('jQuery carregado com sucesso.');
+        });
+    </script>
+</body>
+</html>
