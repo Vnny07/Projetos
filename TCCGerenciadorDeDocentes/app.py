@@ -8,9 +8,8 @@ import qrcode
 import socket
 from flask import send_file
 from io import BytesIO
-import tempfile
-import subprocess
-import os
+from weasyprint import HTML
+import html
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # Replace with a secure key
@@ -567,104 +566,109 @@ def gerar_relatorio(docente_id):
     transferencias = supabase.rpc('get_transferencias_with_relations').execute().data
     transferencias_docente = [t for t in transferencias if t['docente_id'] == docente_id]
 
-    # Gerar código LaTeX
-    latex_content = r"""
-\documentclass[a4paper,12pt]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[portuguese]{babel}
-\usepackage{geometry}
-\geometry{margin=2cm}
-\usepackage{tabularx}
-\usepackage{booktabs}
-\usepackage{parskip}
-\setlength{\parindent}{0pt}
+    # Gerar HTML para o PDF
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 2cm;
+                font-size: 12pt;
+            }}
+            h1 {{
+                text-align: center;
+                font-size: 24pt;
+                margin-bottom: 0.5cm;
+            }}
+            h2 {{
+                font-size: 18pt;
+                margin-top: 1cm;
+                margin-bottom: 0.5cm;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 1cm;
+            }}
+            th, td {{
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }}
+            .no-data {{
+                font-style: italic;
+                color: #555;
+            }}
+            .center {{
+                text-align: center;
+            }}
+        </style>
+    </head>
+    <body>
+        <h1>Relatório do Docente</h1>
+        <p class="center"><strong>Data de Geração:</strong> {datetime.now().strftime('%d/%m/%Y')}</p>
 
-\begin{document}
+        <h2>Dados do Docente</h2>
+        <table>
+            <tr><th>Campo</th><th>Valor</th></tr>
+            <tr><td>Nome</td><td>{html.escape(docente['nome'])}</td></tr>
+            <tr><td>E-mail</td><td>{html.escape(docente['email'] or 'N/A')}</td></tr>
+            <tr><td>Telefone</td><td>{html.escape(docente['telefone'] or 'N/A')}</td></tr>
+            <tr><td>CPF</td><td>{html.escape(docente['cpf'] or 'N/A')}</td></tr>
+            <tr><td>Status</td><td>{html.escape(docente['status'])}</td></tr>
+            <tr><td>Carga Horária Máxima</td><td>{docente['carga_horaria_max']} horas</td></tr>
+        </table>
 
-\begin{center}
-    \textbf{\LARGE Relatório do Docente} \\
-    \vspace{0.5cm}
-    \textbf{Data de Geração:} """ + datetime.now().strftime('%d/%m/%Y') + r"""
-\end{center}
+        <h2>Contrato Atual</h2>
+        {'<table><tr><th>Campo</th><th>Valor</th></tr>'
+         f'<tr><td>Tipo de Contrato</td><td>{html.escape(contrato["tipo_contrato"])}</td></tr>'
+         f'<tr><td>Data de Início</td><td>{contrato["data_inicio"]}</td></tr>'
+         f'<tr><td>Data de Fim</td><td>{contrato["data_fim"] or "N/A"}</td></tr>'
+         f'<tr><td>Valor por Hora</td><td>R$ {contrato["valor_hora"]:.2f}</td></tr>'
+         '</table>' if contrato else '<p class="no-data">Nenhum contrato encontrado.</p>'}
 
-\section*{Dados do Docente}
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-    \textbf{Campo} & \textbf{Valor} \\
-    \midrule
-    Nome & """ + docente['nome'].replace('&', r'\&') + r""" \\
-    E-mail & """ + (docente['email'] or 'N/A').replace('&', r'\&') + r""" \\
-    Telefone & """ + (docente['telefone'] or 'N/A').replace('&', r'\&') + r""" \\
-    CPF & """ + (docente['cpf'] or 'N/A').replace('&', r'\&') + r""" \\
-    Status & """ + docente['status'].replace('&', r'\&') + r""" \\
-    Carga Horária Máxima & """ + str(docente['carga_horaria_max']) + r""" horas \\
-    \bottomrule
-\end{tabularx}
+        <h2>Turmas Alocadas</h2>
+        {'<table><tr><th>Turma</th><th>Disciplina</th><th>Horas Atribuídas</th></tr>' +
+         ''.join([f'<tr><td>{html.escape(a["turma_nome"])}</td><td>{html.escape(a["disciplina_nome"])}</td><td>{a["horas_atribuidas"]} horas</td></tr>'
+                  for a in alocacoes_docente]) + '</table>' if alocacoes_docente else '<p class="no-data">Nenhuma alocação encontrada.</p>'}
 
-\section*{Contrato Atual}
-""" + (r"""
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-    \textbf{Campo} & \textbf{Valor} \\
-    \midrule
-    Tipo de Contrato & """ + contrato['tipo_contrato'].replace('&', r'\&') + r""" \\
-    Data de Início & """ + contrato['data_inicio'] + r""" \\
-    Data de Fim & """ + (contrato['data_fim'] or 'N/A') + r""" \\
-    Valor por Hora & R\$ """ + f"{contrato['valor_hora']:.2f}" + r""" \\
-    \bottomrule
-\end{tabularx}
-""" if contrato else r"\textit{Nenhum contrato encontrado.}") + r"""
+        <h2>Transferências</h2>
+        {'<table><tr><th>Turma Origem</th><th>Turma Destino</th><th>Data</th></tr>' +
+         ''.join([f'<tr><td>{html.escape(t["turma_origem_nome"])}</td><td>{html.escape(t["turma_destino_nome"])}</td><td>{t["data_transferencia"]}</td></tr>'
+                  for t in transferencias_docente]) + '</table>' if transferencias_docente else '<p class="no-data">Nenhuma transferência encontrada.</p>'}
 
-\section*{Turmas Alocadas}
-""" + (r"""
-\begin{tabularx}{\textwidth}{lXXr}
-    \toprule
-    \textbf{Turma} & \textbf{Disciplina} & \textbf{Horas Atribuídas} \\
-    \midrule
-""" + '\n'.join([r"    " + a['turma_nome'].replace('&', r'\&') + r" & " + a['disciplina_nome'].replace('&', r'\&') + r" & " + str(a['horas_atribuidas']) + r" horas \\" for a in alocacoes_docente]) + r"""
-    \bottomrule
-\end{tabularx}
-""" if alocacoes_docente else r"\textit{Nenhuma alocação encontrada.}") + r"""
+    </body>
+    </html>
+    """
 
-\section*{Transferências}
-""" + (r"""
-\begin{tabularx}{\textwidth}{lXX}
-    \toprule
-    \textbf{Turma Origem} & \textbf{Turma Destino} & \textbf{Data} \\
-    \midrule
-""" + '\n'.join([r"    " + t['turma_origem_nome'].replace('&', r'\&') + r" & " + t['turma_destino_nome'].replace('&', r'\&') + r" & " + t['data_transferencia'] + r" \\" for t in transferencias_docente]) + r"""
-    \bottomrule
-\end{tabularx}
-""" if transferencias_docente else r"\textit{Nenhuma transferência encontrada.}") + r"""
-
-\end{document}
-"""
-
-    # Criar arquivo LaTeX temporário
-    with tempfile.NamedTemporaryFile(suffix='.tex', delete=False) as tex_file:
-        tex_file.write(latex_content.encode('utf-8'))
-        tex_file_path = tex_file.name
-
-    # Compilar LaTeX para PDF
-    pdf_path = tex_file_path.replace('.tex', '.pdf')
     try:
-        subprocess.run(['latexmk', '-pdf', '-interaction=nonstopmode', tex_file_path], check=True)
+        # Converter HTML em PDF usando WeasyPrint
+        pdf_buffer = BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+
         # Enviar o PDF como download
-        response = send_file(pdf_path, as_attachment=True, download_name=f'relatorio_docente_{docente_id}.pdf')
+        response = send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name=f'relatorio_docente_{docente_id}.pdf',
+            mimetype='application/pdf'
+        )
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
         return response
-    except subprocess.CalledProcessError as e:
-        flash('Erro ao gerar o relatório em PDF.', 'error')
+    except Exception as e:
+        print(f"Erro ao gerar PDF com WeasyPrint: {str(e)}")
+        flash(f'Erro ao gerar o relatório em PDF: {str(e)}', 'error')
         return redirect(url_for('dashboard'))
-    finally:
-        # Limpar arquivos temporários
-        for ext in ['.tex', '.pdf', '.aux', '.log', '.fls', '.fdb_latexmk']:
-            file_path = tex_file_path.replace('.tex', ext)
-            if os.path.exists(file_path):
-                os.remove(file_path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
