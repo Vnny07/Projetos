@@ -6,6 +6,11 @@ from functools import wraps
 from datetime import datetime
 import qrcode
 import socket
+from flask import send_file
+from io import BytesIO
+import tempfile
+import subprocess
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # Replace with a secure key
@@ -238,11 +243,36 @@ def alocar_docente():
         return redirect(url_for('dashboard'))
 
     data = request.form
+    docente_id = data['docente_id']
+    horas_atribuidas = int(data['horas_atribuidas'])
+
+    if horas_atribuidas <= 0:
+        flash('As horas atribuídas devem ser maiores que zero.', 'error')
+        return redirect(url_for('dashboard'))
+
+    # Obter a carga horária máxima do docente
+    docente = supabase.from_('docentes').select('carga_horaria_max').eq('id', docente_id).execute()
+    if not docente.data:
+        flash('Docente inválido.', 'error')
+        return redirect(url_for('dashboard'))
+
+    carga_horaria_max = docente.data[0]['carga_horaria_max']
+
+    # Calcular a soma das horas já atribuídas ao docente
+    alocacoes = supabase.from_('alocacoes').select('horas_atribuidas').eq('docente_id', docente_id).execute()
+    horas_atuais = sum(alocacao['horas_atribuidas'] for alocacao in alocacoes.data)
+
+    # Verificar se a nova alocação ultrapassa a carga horária máxima
+    if horas_atuais + horas_atribuidas > carga_horaria_max:
+        flash(f'A alocação excede a carga horária máxima do docente ({carga_horaria_max} horas). Horas atuais: {horas_atuais}.', 'error')
+        return redirect(url_for('dashboard'))
+
+    # Inserir a nova alocação
     supabase.from_('alocacoes').insert({
-        'docente_id': data['docente_id'],
+        'docente_id': docente_id,
         'disciplina_id': data['disciplina_id'],
         'turma_id': data['turma_id'],
-        'horas_atribuidas': int(data['horas_atribuidas'])
+        'horas_atribuidas': horas_atribuidas
     }).execute()
 
     flash('Docente alocado com sucesso.', 'success')
@@ -510,6 +540,131 @@ def get_disciplinas():
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
+
+@app.route('/gerar_relatorio/<docente_id>')
+@login_required
+def gerar_relatorio(docente_id):
+    if check_user_type(session['user_id']) != 'coordenador':
+        flash('Acesso não autorizado.', 'error')
+        return redirect(url_for('dashboard'))
+
+    # Obter dados do docente
+    docente = supabase.from_('docentes').select('nome, email, telefone, cpf, status, carga_horaria_max').eq('id', docente_id).execute()
+    if not docente.data:
+        flash('Docente inválido.', 'error')
+        return redirect(url_for('dashboard'))
+    docente = docente.data[0]
+
+    # Obter contrato atual (o mais recente com data_fim nula ou futura)
+    contratos = supabase.from_('contratos').select('tipo_contrato, data_inicio, data_fim, valor_hora').eq('docente_id', docente_id).order('data_inicio', desc=True).execute()
+    contrato = contratos.data[0] if contratos.data else None
+
+    # Obter alocações
+    alocacoes = supabase.rpc('get_alocacoes_with_relations').execute().data
+    alocacoes_docente = [a for a in alocacoes if a['docente_id'] == docente_id]
+
+    # Obter transferências
+    transferencias = supabase.rpc('get_transferencias_with_relations').execute().data
+    transferencias_docente = [t for t in transferencias if t['docente_id'] == docente_id]
+
+    # Gerar código LaTeX
+    latex_content = r"""
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\geometry{margin=2cm}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+    \textbf{\LARGE Relatório do Docente} \\
+    \vspace{0.5cm}
+    \textbf{Data de Geração:} """ + datetime.now().strftime('%d/%m/%Y') + r"""
+\end{center}
+
+\section*{Dados do Docente}
+\begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Campo} & \textbf{Valor} \\
+    \midrule
+    Nome & """ + docente['nome'].replace('&', r'\&') + r""" \\
+    E-mail & """ + (docente['email'] or 'N/A').replace('&', r'\&') + r""" \\
+    Telefone & """ + (docente['telefone'] or 'N/A').replace('&', r'\&') + r""" \\
+    CPF & """ + (docente['cpf'] or 'N/A').replace('&', r'\&') + r""" \\
+    Status & """ + docente['status'].replace('&', r'\&') + r""" \\
+    Carga Horária Máxima & """ + str(docente['carga_horaria_max']) + r""" horas \\
+    \bottomrule
+\end{tabularx}
+
+\section*{Contrato Atual}
+""" + (r"""
+\begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Campo} & \textbf{Valor} \\
+    \midrule
+    Tipo de Contrato & """ + contrato['tipo_contrato'].replace('&', r'\&') + r""" \\
+    Data de Início & """ + contrato['data_inicio'] + r""" \\
+    Data de Fim & """ + (contrato['data_fim'] or 'N/A') + r""" \\
+    Valor por Hora & R\$ """ + f"{contrato['valor_hora']:.2f}" + r""" \\
+    \bottomrule
+\end{tabularx}
+""" if contrato else r"\textit{Nenhum contrato encontrado.}") + r"""
+
+\section*{Turmas Alocadas}
+""" + (r"""
+\begin{tabularx}{\textwidth}{lXXr}
+    \toprule
+    \textbf{Turma} & \textbf{Disciplina} & \textbf{Horas Atribuídas} \\
+    \midrule
+""" + '\n'.join([r"    " + a['turma_nome'].replace('&', r'\&') + r" & " + a['disciplina_nome'].replace('&', r'\&') + r" & " + str(a['horas_atribuidas']) + r" horas \\" for a in alocacoes_docente]) + r"""
+    \bottomrule
+\end{tabularx}
+""" if alocacoes_docente else r"\textit{Nenhuma alocação encontrada.}") + r"""
+
+\section*{Transferências}
+""" + (r"""
+\begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \textbf{Turma Origem} & \textbf{Turma Destino} & \textbf{Data} \\
+    \midrule
+""" + '\n'.join([r"    " + t['turma_origem_nome'].replace('&', r'\&') + r" & " + t['turma_destino_nome'].replace('&', r'\&') + r" & " + t['data_transferencia'] + r" \\" for t in transferencias_docente]) + r"""
+    \bottomrule
+\end{tabularx}
+""" if transferencias_docente else r"\textit{Nenhuma transferência encontrada.}") + r"""
+
+\end{document}
+"""
+
+    # Criar arquivo LaTeX temporário
+    with tempfile.NamedTemporaryFile(suffix='.tex', delete=False) as tex_file:
+        tex_file.write(latex_content.encode('utf-8'))
+        tex_file_path = tex_file.name
+
+    # Compilar LaTeX para PDF
+    pdf_path = tex_file_path.replace('.tex', '.pdf')
+    try:
+        subprocess.run(['latexmk', '-pdf', '-interaction=nonstopmode', tex_file_path], check=True)
+        # Enviar o PDF como download
+        response = send_file(pdf_path, as_attachment=True, download_name=f'relatorio_docente_{docente_id}.pdf')
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    except subprocess.CalledProcessError as e:
+        flash('Erro ao gerar o relatório em PDF.', 'error')
+        return redirect(url_for('dashboard'))
+    finally:
+        # Limpar arquivos temporários
+        for ext in ['.tex', '.pdf', '.aux', '.log', '.fls', '.fdb_latexmk']:
+            file_path = tex_file_path.replace('.tex', ext)
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

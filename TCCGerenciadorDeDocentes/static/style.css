@@ -312,7 +312,7 @@ button:hover {
 
 .registro-actions button.delete-button:hover {
     background-color: #b30000;
-    color: #000000; /* Alterado de #ffffff para #000000 */
+    color: #000000;
 }
 
 .modal-actions {
@@ -343,6 +343,12 @@ button:hover {
     background-color: #00b300;
     color: #000000;
     font-weight: bold;
+}
+
+.back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
 }
 
 @media (max-width: 600px) {

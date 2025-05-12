@@ -48,8 +48,11 @@
                     <button onclick="openModal('transferencia')">Transferir Docente</button>
                     <a href="/registros/transferencias" class="record-button">Registros</a>
                 </div>
+                <div class="button-group">
+                    <button onclick="openModal('relatorio')">Gerar Relatório</button>
+                </div>
             {% endif %}
-            <a class="link logout-link" onclick="openLogoutModal()">Sair</a>
+            <a class="link logout-link" style="margin-top: 5px;" onclick="openLogoutModal()">Sair</a>
         </div>
 
         <!-- Modals -->
@@ -75,6 +78,50 @@
     </div>
 
     <script>
+        // Função para validar CPF
+        function validarCPF(cpf) {
+            // Remove caracteres não numéricos
+            cpf = cpf.replace(/[^\d]+/g, '');
+
+            // Verifica se o CPF tem 11 dígitos
+            if (cpf.length !== 11) {
+                return false;
+            }
+
+            // Verifica se todos os dígitos são iguais (ex.: 11111111111)
+            if (/^(\d)\1+$/.test(cpf)) {
+                return false;
+            }
+
+            // Calcula o primeiro dígito verificador
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let resto = 11 - (soma % 11);
+            let digito1 = (resto >= 10) ? 0 : resto;
+
+            // Verifica o primeiro dígito verificador
+            if (digito1 !== parseInt(cpf.charAt(9))) {
+                return false;
+            }
+
+            // Calcula o segundo dígito verificador
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = 11 - (soma % 11);
+            let digito2 = (resto >= 10) ? 0 : resto;
+
+            // Verifica o segundo dígito verificador
+            if (digito2 !== parseInt(cpf.charAt(10))) {
+                return false;
+            }
+
+            return true;
+        }
+
         function openModal(type) {
             const modal = document.getElementById('modal');
             const modalForm = document.getElementById('modal-form');
@@ -83,7 +130,8 @@
             if (type === 'docente') {
                 formHtml = `
                     <h3>Cadastrar Docente</h3>
-                    <form action="/cadastrar_docente" method="POST">
+                    <div id="cpf-error" class="flash error" style="display: none;">CPF inválido.</div>
+                    <form id="docente-form" action="/cadastrar_docente" method="POST">
                         <div class="form-group">
                             <label for="nome">Nome:</label>
                             <input type="text" id="nome" name="nome" required>
@@ -102,7 +150,10 @@
                         </div>
                         <div class="form-group">
                             <label for="status">Status:</label>
-                            <input type="text" id="status" name="status">
+                            <select id="status" name="status" required>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="carga_horaria_max">Carga Horária Máx:</label>
@@ -128,7 +179,13 @@
                         </div>
                         <div class="form-group">
                             <label for="tipo_contrato">Tipo Contrato:</label>
-                            <input type="text" id="tipo_contrato" name="tipo_contrato" required>
+                            <select id="tipo_contrato" name="tipo_contrato" required>
+                                <option value="Contrato de Estágio">Contrato de Estágio</option>
+                                <option value="Contrato de Trabalho Temporário">Contrato de Trabalho Temporário</option>
+                                <option value="Contrato de Trabalho com Carteira Assinada">Contrato de Trabalho com Carteira Assinada</option>
+                                <option value="Contrato de Substituição Docente">Contrato de Substituição Docente</option>
+                                <option value="Contrato de Projeto ou Atividade Específica">Contrato de Projeto ou Atividade Específica</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="valor_hora">Valor Hora:</label>
@@ -146,7 +203,11 @@
                         </div>
                         <div class="form-group">
                             <label for="periodo">Período:</label>
-                            <input type="text" id="periodo" name="periodo" required>
+                            <select id="periodo" name="periodo" required>
+                                <option value="Matutino">Matutino</option>
+                                <option value="Vespertino">Vespertino</option>
+                                <option value="Noturno">Noturno</option>
+                            </select>
                         </div>
                         <button type="submit">Cadastrar</button>
                     </form>`;
@@ -163,7 +224,8 @@
             } else if (type === 'alocacao') {
                 formHtml = `
                     <h3>Alocar Docente</h3>
-                    <form action="/alocar_docente" method="POST">
+                    <div id="alocacao-error" class="flash error" style="display: none;"></div>
+                    <form id="alocacao-form" action="/alocar_docente" method="POST">
                         <div class="form-group">
                             <label for="docente_id">Docente:</label>
                             <select id="docente_id" name="docente_id" required></select>
@@ -178,9 +240,9 @@
                         </div>
                         <div class="form-group">
                             <label for="horas_atribuidas">Horas Atribuídas:</label>
-                            <input type="number" id="horas_atribuidas" name="horas_atribuidas" required>
+                            <input type="number" id="horas_atribuidas" name="horas_atribuidas" required min="1">
                         </div>
-                        <button type="submit">Cadastrar</button>
+                        <button type="submit">Alocar</button>
                     </form>`;
             } else if (type === 'transferencia') {
                 formHtml = `
@@ -198,7 +260,18 @@
                             <label for="turma_destino">Turma Destino:</label>
                             <select id="turma_destino" name="turma_destino" required></select>
                         </div>
-                        <button type="submit">Cadastrar</button>
+                        <button type="submit">Transferir</button>
+                    </form>`;
+            } else if (type === 'relatorio') {
+                formHtml = `
+                    <h3>Gerar Relatório</h3>
+                    <div id="relatorio-error" class="flash error" style="display: none;"></div>
+                    <form id="relatorio-form">
+                        <div class="form-group">
+                            <label for="docente_id">Docente:</label>
+                            <select id="docente_id" name="docente_id" required></select>
+                        </div>
+                        <button type="button" onclick="gerarRelatorio()">Gerar PDF</button>
                     </form>`;
             }
 
@@ -206,7 +279,7 @@
             modal.style.display = 'flex';
 
             // Load select options
-            if (['contrato', 'alocacao', 'transferencia'].includes(type)) {
+            if (['contrato', 'alocacao', 'transferencia', 'relatorio'].includes(type)) {
                 $.get('/get_docentes', function(data) {
                     const select = document.getElementById('docente_id');
                     select.innerHTML = data.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
@@ -231,6 +304,18 @@
                     destino.innerHTML = options;
                 });
             }
+        }
+
+        // Função para gerar relatório
+        function gerarRelatorio() {
+            const docenteId = document.getElementById('docente_id').value;
+            if (!docenteId) {
+                const relatorioError = document.getElementById('relatorio-error');
+                relatorioError.textContent = 'Selecione um docente.';
+                relatorioError.style.display = 'block';
+                return;
+            }
+            window.location.href = `/gerar_relatorio/${docenteId}`;
         }
 
         // Close modal
@@ -263,6 +348,46 @@
         function confirmLogout() {
             window.location.href = '/logout';
         }
+
+        // Validação do formulário de docente
+        $(document).on('submit', '#docente-form', function(e) {
+            console.log('Formulário de docente submetido'); // Depuração
+            const cpfInput = document.getElementById('cpf').value;
+            const cpfError = document.getElementById('cpf-error');
+
+            // Se o campo CPF estiver preenchido, validar
+            if (cpfInput.trim() !== '') {
+                if (!validarCPF(cpfInput)) {
+                    console.log('CPF inválido:', cpfInput); // Depuração
+                    e.preventDefault();
+                    cpfError.style.display = 'block';
+                    return false;
+                }
+            }
+
+            console.log('CPF válido ou não preenchido, prosseguindo com submissão'); // Depuração
+            cpfError.style.display = 'none';
+            return true;
+        });
+
+        // Validação do formulário de alocação
+        $(document).on('submit', '#alocacao-form', function(e) {
+            console.log('Formulário de alocação submetido'); // Depuração
+            const horasInput = document.getElementById('horas_atribuidas').value;
+            const alocacaoError = document.getElementById('alocacao-error');
+
+            if (horasInput <= 0) {
+                console.log('Horas atribuídas inválidas:', horasInput); // Depuração
+                e.preventDefault();
+                alocacaoError.textContent = 'As horas atribuídas devem ser maiores que zero.';
+                alocacaoError.style.display = 'block';
+                return false;
+            }
+
+            console.log('Horas válidas, prosseguindo com submissão'); // Depuração
+            alocacaoError.style.display = 'none';
+            return true;
+        });
     </script>
 </body>
 </html>
