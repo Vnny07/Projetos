@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gerenciador de Docentes Extra-Quadro - Editar Conta</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/icone.png" alt="Logo SENAI" class="logo">
+        <h1>Gerenciador de Docentes Extra-Quadro</h1>
+        <h2>Editar Conta</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <p>Olá, {{ usuario_nome }}!</p>
+        <div class="dashboard-buttons">
+            <button onclick="openModal('alterar_email')">Alterar E-mail</button>
+            <button onclick="openModal('alterar_senha')">Alterar Senha</button>
+            <button onclick="openModal('excluir_conta')">Excluir Conta</button>
+            <a href="/dashboard" class="link back-link">Voltar à página principal</a>
+        </div>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <div id="modal-form"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const modalForm = document.getElementById('modal-form');
+            let formHtml = '';
+
+            if (type === 'alterar_email') {
+                formHtml = `
+                    <h3>Alterar E-mail</h3>
+                    <div id="email-error" class="flash error" style="display: none;"></div>
+                    <form id="alterar-email-form" action="/alterar_email" method="POST">
+                        <div class="form-group">
+                            <label for="email_atual">E-mail Atual:</label>
+                            <input type="email" id="email_atual" name="email_atual" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email_novo">Novo E-mail:</label>
+                            <input type="email" id="email_novo" name="email_novo" required>
+                        </div>
+                        <button type="submit">Alterar</button>
+                    </form>`;
+            } else if (type === 'alterar_senha') {
+                formHtml = `
+                    <h3>Alterar Senha</h3>
+                    <div id="senha-error" class="flash error" style="display: none;"></div>
+                    <form id="alterar-senha-form" action="/alterar_senha" method="POST">
+                        <div class="form-group">
+                            <label for="senha_atual">Senha Atual:</label>
+                            <input type="password" id="senha_atual" name="senha_atual" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="senha_nova">Nova Senha:</label>
+                            <input type="password" id="senha_nova" name="senha_nova" required>
+                        </div>
+                        <button type="submit">Alterar</button>
+                    </form>`;
+            } else if (type === 'excluir_conta') {
+                formHtml = `
+                    <h3>Excluir Conta</h3>
+                    <div id="excluir-error" class="flash error" style="display: none;"></div>
+                    <form id="excluir-conta-form" action="/excluir_conta" method="POST">
+                        <div class="form-group">
+                            <label for="senha_atual">Senha Atual:</label>
+                            <input type="password" id="senha_atual" name="senha_atual" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmar_senha">Confirmar Senha:</label>
+                            <input type="password" id="confirmar_senha" name="confirmar_senha" required>
+                        </div>
+                        <button type="submit">Excluir</button>
+                    </form>`;
+            }
+
+            modalForm.innerHTML = formHtml;
+            modal.style.display = 'flex';
+        }
+
+        // Close modal
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Validação do formulário de alterar e-mail
+        $(document).on('submit', '#alterar-email-form', function(e) {
+            const emailAtual = document.getElementById('email_atual').value;
+            const emailNovo = document.getElementById('email_novo').value;
+            const emailError = document.getElementById('email-error');
+
+            if (emailAtual === emailNovo) {
+                e.preventDefault();
+                emailError.textContent = 'O novo e-mail deve ser diferente do atual.';
+                emailError.style.display = 'block';
+                return false;
+            }
+
+            emailError.style.display = 'none';
+            return true;
+        });
+
+        // Validação do formulário de alterar senha
+        $(document).on('submit', '#alterar-senha-form', function(e) {
+            const senhaAtual = document.getElementById('senha_atual').value;
+            const senhaNova = document.getElementById('senha_nova').value;
+            const senhaError = document.getElementById('senha-error');
+
+            if (senhaAtual === senhaNova) {
+                e.preventDefault();
+                senhaError.textContent = 'A nova senha deve ser diferente da atual.';
+                senhaError.style.display = 'block';
+                return false;
+            }
+
+            senhaError.style.display = 'none';
+            return true;
+        });
+
+        // Validação do formulário de excluir conta
+        $(document).on('submit', '#excluir-conta-form', function(e) {
+            const senhaAtual = document.getElementById('senha_atual').value;
+            const confirmarSenha = document.getElementById('confirmar_senha').value;
+            const excluirError = document.getElementById('excluir-error');
+
+            if (senhaAtual !== confirmarSenha) {
+                e.preventDefault();
+                excluirError.textContent = 'As senhas não coincidem.';
+                excluirError.style.display = 'block';
+                return false;
+            }
+
+            excluirError.style.display = 'none';
+            return true;
+        });
+    </script>
+</body>
+</html>

@@ -10,11 +10,13 @@ from flask import send_file
 from io import BytesIO
 from weasyprint import HTML
 import html
+import base64
+import os
+from flask import current_app
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'  # Replace with a secure key
+app.secret_key = 'your-secret-key'
 
-# Dynamically get the local IP address
 def get_local_ip():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,9 +26,8 @@ def get_local_ip():
         s.close()
         return local_ip
     except Exception:
-        return '127.0.0.1'  # Fallback to localhost if IP detection fails
+        return '127.0.0.1'
 
-# Generate QR code with local IP
 local_ip = get_local_ip()
 url = f"http://{local_ip}:5000"
 qr = qrcode.QRCode(version=1, box_size=10, border=4)
@@ -35,7 +36,6 @@ qr.make(fit=True)
 img = qr.make_image(fill_color="black", back_color="white")
 img.save("static/qrcode.png")
 
-# Login required decorator with cache control
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -49,10 +49,13 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Check user type
 def check_user_type(user_id):
     result = supabase.from_('usuarios').select('tipo_usuario').eq('id', user_id).execute()
     return result.data[0]['tipo_usuario'] if result.data else None
+
+def get_user_name(user_id):
+    result = supabase.from_('usuarios').select('nome').eq('id', user_id).execute()
+    return result.data[0]['nome'] if result.data else 'Usuário'
 
 @app.route('/')
 def index():
@@ -133,6 +136,88 @@ def cadastro():
 def dashboard():
     tipo_usuario = check_user_type(session['user_id'])
     response = make_response(render_template('dashboard.html', tipo_usuario=tipo_usuario))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/editar_conta')
+@login_required
+def editar_conta():
+    usuario_nome = get_user_name(session['user_id'])
+    response = make_response(render_template('editar.html', usuario_nome=usuario_nome))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/alterar_email', methods=['POST'])
+@login_required
+def alterar_email():
+    email_atual = request.form['email_atual']
+    email_novo = request.form['email_novo']
+    user_id = session['user_id']
+
+    result = supabase.from_('usuarios').select('email').eq('id', user_id).execute()
+    if not result.data or result.data[0]['email'] != email_atual:
+        flash('E-mail atual incorreto.', 'error')
+        return redirect(url_for('editar_conta'))
+
+    email_check = supabase.from_('usuarios').select('id').eq('email', email_novo).execute()
+    if email_check.data:
+        flash('O novo e-mail já está em uso.', 'error')
+        return redirect(url_for('editar_conta'))
+
+    supabase.from_('usuarios').update({'email': email_novo}).eq('id', user_id).execute()
+    flash('E-mail alterado com sucesso.', 'success')
+    response = make_response(redirect(url_for('editar_conta')))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/alterar_senha', methods=['POST'])
+@login_required
+def alterar_senha():
+    senha_atual = request.form['senha_atual']
+    senha_nova = request.form['senha_nova']
+    user_id = session['user_id']
+
+    result = supabase.from_('usuarios').select('senha').eq('id', user_id).execute()
+    if not result.data or not bcrypt.checkpw(senha_atual.encode('utf-8'), result.data[0]['senha'].encode('utf-8')):
+        flash('Senha atual incorreta.', 'error')
+        return redirect(url_for('editar_conta'))
+
+    hashed_senha = bcrypt.hashpw(senha_nova.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    supabase.from_('usuarios').update({'senha': hashed_senha}).eq('id', user_id).execute()
+    flash('Senha alterada com sucesso.', 'success')
+    response = make_response(redirect(url_for('editar_conta')))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/excluir_conta', methods=['POST'])
+@login_required
+def excluir_conta():
+    senha_atual = request.form['senha_atual']
+    confirmar_senha = request.form['confirmar_senha']
+    user_id = session['user_id']
+
+    if senha_atual != confirmar_senha:
+        flash('As senhas não coincidem.', 'error')
+        return redirect(url_for('editar_conta'))
+
+    result = supabase.from_('usuarios').select('senha').eq('id', user_id).execute()
+    if not result.data or not bcrypt.checkpw(senha_atual.encode('utf-8'), result.data[0]['senha'].encode('utf-8')):
+        flash('Senha atual incorreta.', 'error')
+        return redirect(url_for('editar_conta'))
+
+    supabase.from_('usuarios').delete().eq('id', user_id).execute()
+    session.clear()
+    flash('Conta excluída com sucesso.', 'success')
+    response = make_response(redirect(url_for('index')))
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
@@ -249,7 +334,6 @@ def alocar_docente():
         flash('As horas atribuídas devem ser maiores que zero.', 'error')
         return redirect(url_for('dashboard'))
 
-    # Obter a carga horária máxima do docente
     docente = supabase.from_('docentes').select('carga_horaria_max').eq('id', docente_id).execute()
     if not docente.data:
         flash('Docente inválido.', 'error')
@@ -257,16 +341,13 @@ def alocar_docente():
 
     carga_horaria_max = docente.data[0]['carga_horaria_max']
 
-    # Calcular a soma das horas já atribuídas ao docente
     alocacoes = supabase.from_('alocacoes').select('horas_atribuidas').eq('docente_id', docente_id).execute()
     horas_atuais = sum(alocacao['horas_atribuidas'] for alocacao in alocacoes.data)
 
-    # Verificar se a nova alocação ultrapassa a carga horária máxima
     if horas_atuais + horas_atribuidas > carga_horaria_max:
         flash(f'A alocação excede a carga horária máxima do docente ({carga_horaria_max} horas). Horas atuais: {horas_atuais}.', 'error')
         return redirect(url_for('dashboard'))
 
-    # Inserir a nova alocação
     supabase.from_('alocacoes').insert({
         'docente_id': docente_id,
         'disciplina_id': data['disciplina_id'],
@@ -360,7 +441,6 @@ def editar_registro(tipo, id):
         flash('Tipo de registro inválido.', 'error')
         return redirect(url_for('registros', tipo=tipo))
 
-    # Verificar se o registro existe
     existing = supabase.from_(tipo).select('id').eq('id', id).execute()
     if not existing.data:
         flash('Registro não encontrado.', 'error')
@@ -368,10 +448,8 @@ def editar_registro(tipo, id):
 
     data = request.form.to_dict()
 
-    # Remover campos vazios ou inválidos, exceto para campos opcionais
     data = {k: v for k, v in data.items() if v is not None and (v != '' or k in ['email', 'telefone', 'cpf', 'status', 'data_fim'])}
 
-    # Validações específicas por tipo
     try:
         if tipo == 'docentes':
             if 'nome' not in data or not data['nome']:
@@ -476,11 +554,9 @@ def editar_registro(tipo, id):
             if 'turma_origem' in data and 'turma_destino' in data and data['turma_origem'] == data['turma_destino']:
                 flash('A turma de origem deve ser diferente da turma de destino.', 'error')
                 return redirect(url_for('registros', tipo=tipo))
-            if 'data_transferencia' not in data or not data['data_transferencia']:
-                flash('A data de transferência é obrigatória.', 'error')
-                return redirect(url_for('registros', tipo=tipo))
+            if 'data_transferencia' in data:
+                del data['data_transferencia']
 
-        # Atualizar o registro
         supabase.from_(tipo).update(data).eq('id', id).execute()
         flash('Registro editado com sucesso.', 'success')
 
@@ -547,35 +623,43 @@ def gerar_relatorio(docente_id):
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('dashboard'))
 
-    # Obter dados do docente
     docente = supabase.from_('docentes').select('nome, email, telefone, cpf, status, carga_horaria_max').eq('id', docente_id).execute()
     if not docente.data:
         flash('Docente inválido.', 'error')
         return redirect(url_for('dashboard'))
     docente = docente.data[0]
 
-    # Obter contrato atual (o mais recente com data_fim nula ou futura)
     contratos = supabase.from_('contratos').select('tipo_contrato, data_inicio, data_fim, valor_hora').eq('docente_id', docente_id).order('data_inicio', desc=True).execute()
     contrato = contratos.data[0] if contratos.data else None
 
-    # Obter alocações
     alocacoes = supabase.rpc('get_alocacoes_with_relations').execute().data
     alocacoes_docente = [a for a in alocacoes if a['docente_id'] == docente_id]
 
-    # Obter transferências
     transferencias = supabase.rpc('get_transferencias_with_relations').execute().data
     transferencias_docente = [t for t in transferencias if t['docente_id'] == docente_id]
 
-    # Gerar HTML para o PDF
+    try:
+        image_path = os.path.join(app.static_folder, 'icone.png')
+        with open(image_path, "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+        image_data_uri = f"data:image/png;base64,{base64_image}"
+    except Exception as e:
+        print(f"Erro ao carregar imagem: {str(e)}")
+        flash(f'Erro ao carregar a imagem para o relatório: {str(e)}', 'error')
+        image_data_uri = ""
+
     html_content = f"""
     <!DOCTYPE html>
     <html lang="pt-br">
     <head>
         <meta charset="UTF-8">
         <style>
+            @page {{
+                margin: 2.5cm; /* Margens consistentes em todas as páginas */
+            }}
             body {{
                 font-family: Arial, sans-serif;
-                margin: 2cm;
+                margin: 0; /* Remove margens do body, já que @page lida com isso */
                 font-size: 12pt;
             }}
             h1 {{
@@ -609,15 +693,22 @@ def gerar_relatorio(docente_id):
             .center {{
                 text-align: center;
             }}
+            .logo {{
+                display: block;
+                margin: 0 auto 20px auto;
+                width: 350px; /* Mantido o tamanho maior da logo */
+                height: auto;
+            }}
         </style>
     </head>
     <body>
-        <h1>Relatório do Docente</h1>
+        {"<img src=\"" + image_data_uri + "\" alt=\"Logo SENAI\" class=\"logo\">" if image_data_uri else "<p>Imagem não disponível</p>"}
+        <h1>Relatório</h1>
         <p class="center"><strong>Data de Geração:</strong> {datetime.now().strftime('%d/%m/%Y')}</p>
 
         <h2>Dados do Docente</h2>
         <table>
-            <tr><th>Campo</th><th>Valor</th></tr>
+            <tr><th>Docente</th><th>Registros</th></tr>
             <tr><td>Nome</td><td>{html.escape(docente['nome'])}</td></tr>
             <tr><td>E-mail</td><td>{html.escape(docente['email'] or 'N/A')}</td></tr>
             <tr><td>Telefone</td><td>{html.escape(docente['telefone'] or 'N/A')}</td></tr>
@@ -627,7 +718,7 @@ def gerar_relatorio(docente_id):
         </table>
 
         <h2>Contrato Atual</h2>
-        {'<table><tr><th>Campo</th><th>Valor</th></tr>'
+        {'<table><tr><th>Contrato</th><th>Registros</th></tr>'
          f'<tr><td>Tipo de Contrato</td><td>{html.escape(contrato["tipo_contrato"])}</td></tr>'
          f'<tr><td>Data de Início</td><td>{contrato["data_inicio"]}</td></tr>'
          f'<tr><td>Data de Fim</td><td>{contrato["data_fim"] or "N/A"}</td></tr>'
@@ -649,12 +740,10 @@ def gerar_relatorio(docente_id):
     """
 
     try:
-        # Converter HTML em PDF usando WeasyPrint
         pdf_buffer = BytesIO()
         HTML(string=html_content).write_pdf(pdf_buffer)
         pdf_buffer.seek(0)
 
-        # Enviar o PDF como download
         response = send_file(
             pdf_buffer,
             as_attachment=True,
